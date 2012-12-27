@@ -1,0 +1,1505 @@
+<project basedir="." default="copySpringDependencies" name="PrepSpringSupport"
+	xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+<!-- TODO: 
+	Add .jar files of xalan, xerces, xml-apis, serializer what are necessary for Spring annotation support.
+	Add spring-form.tld (This is not necessary for Spring 3.x)
+ -->
+	
+<description>
+Prerequisit: 
+	Ant version 1.8 or higher
+	Ant-Contrib Tasks plugin has been downloaded.
+	maven-ant-tasks maven plugin has been downloaded.
+		To download maven-ant-tasks, execute mvn command like:
+			mvn help:describe -Dplugin=maven-ant-tasks
+Input (will be read from PrepJsfSupport.Ant.properties default):
+	PrepSpringSupport.Ant.PropertyFileName (Optional): 
+		Name of property file from where values of the properties below will be read.  
+	CommonAntUtilsDir: Points at CommonAntUtils directory
+	antContribJar (Required): 
+		Points at .jar file fo Ant-Contrib Tasks plugin. 
+		(Even it has been copied to ant's lib sub-directory, please specify this. Sorry for your inconvenience for such case.)
+	mavenAntTasksJar (Optional): Points at maven-ant-tasks maven plugin .jar file.  
+	maven.repo.local (Optional): Points at maven local repository =//D:/mvn_repo
+	springDir (Optional):  
+		Points at directory where Spring libraries are available. 
+		All .jar files in this directory will be copied to ${destWebInfDir}/lib.
+		If it's not specified, then Spring libraries will be downloaded from maven remote repository. 
+	springMajorVersionInt: 
+		Major version number of Spring .jar files to copy to destination directory from maven remote repository. Default value is 3. 
+		This will be ignored when springDir property is specified. 
+	springVersion: 
+		Verison string to be used to specify version or version range of Spring .jar to be copied from maven remote repository. 
+		This will be also used as just version of schema in applicationContext.xml being generated, when 
+		springDir is specified but springApplicationContextFile is.
+	springApplicationContextFile (Optional): 
+		Points at Spring's application contenxt .xml file what will be copied as ${destWebInfDir}/applicationContext.xml file. 
+		When this is not specified, applicationContext.xml file will be generated automatically with simple case content. 
+	destWebInfDir (Optional): 
+		Points at detination WEB-INF directory where lib folder will be created and dependency libraries are copied to that lib folder. 
+		Default value is ".".
+	orignWebXmlFile (Optional):
+		Points web.xml file which will be copied as ${destWebInfDir}/web.xml, and 
+		elements for Spring configuration as example will be appended if those are absent.
+	eclipseClassPath (Optional):
+		Path to .classpath file of Eclipse's project, and that file must already exist. 
+		If specified, Spring's .jar files and dependecy .jar files will be added to the specified file.
+	prepEnvTools.LogFile (Optional): Name of log file being generated.
+	
+Output:	
+	Copy files (necessary to support JSF on GAE/J) to directory specified by dependenciesDestDir property.
+		Files are something like (version info in file names might be stripped):
+			spring-aop-3.0.3.RELEASE.jar
+			spring-asm-3.0.3.RELEASE.jar
+			spring-beans-3.0.3.RELEASE.jar
+			spring-context-3.0.3.RELEASE.jar
+			spring-context-support-3.0.3.RELEASE.jar
+			spring-core-3.0.3.RELEASE.jar
+			spring-expression-3.0.3.RELEASE.jar
+			spring-web-3.0.3.RELEASE.jar
+			spring-webmvc-3.0.3.RELEASE.jar
+			commons-logging-1.1.1.jar
+			commons-logging-adapters-1.1.jar
+			commons-logging-api-1.1.jar
+	${destWebInfDir}/web.xml
+		Generated from scratch or based on ${orignWebXmlFile}, and 
+		elements for org.springframework.web.servlet.DispatcherServlet will be added if such elements are absent. 
+	${destWebInfDir}/applicationContext.xml
+		Generated from scratch or based on ${springApplicationContextFile}. 
+		When ${destWebInfDir}/applicationContext.xml pre-exist, then it will be backed up as ${destWebInfDir}/applicationContext.xml.bak.
+	SpringDependencyRefs.xml: 
+		Will be created in current directory when Spring library file(s) is/are downloaded from maven remote repository. 
+	ApacheCommonsLoggingDependencyRefs.xml: 
+		Will be created in current directory when Apache Commons Logging library files are downloaded from maven remote repository.
+</description>
+	
+	<condition property="PrepSpringSupportAntPropertyFileName" 
+		value="${PrepSpringSupport.Ant.PropertyFileName}" else="PrepSpringSupport.Ant.properties">
+		<isset property="PrepSpringSupport.Ant.PropertyFileName" />
+	</condition> 
+	<property file="${PrepSpringSupportAntPropertyFileName}" /> <!-- Needs to be stated at first -->
+	<property environment="env" />	
+	
+	<condition property="CommonAntUtilsDir" else="../CommonAntUtils">
+		<isset property="CommonAntUtilsDir" />
+	</condition>
+	
+	<!-- For Ant version check -->
+	<import file="${CommonAntUtilsDir}/AntVersionCheck.Ant.xml" />
+	<!-- For Ant-Contrib Tasks -->
+	<import file="${CommonAntUtilsDir}/Ant-ContribTasksDef.Ant.xml" />
+	<!-- For maven-ant-tasks plug-in  -->
+	<import file="${CommonAntUtilsDir}/MavenAntTasksDef.Ant.xml" />
+	<!-- To prepare common properties -->
+	<import file="${CommonAntUtilsDir}/PrepWebInfProperties.Ant.xml" />
+	<!-- For showing/logging message -->
+	<import file="${CommonAntUtilsDir}/EchoUtils.Ant.xml" />
+	
+	<target name="precopySpringDependencies">
+		<script language="javascript">
+			<![CDATA[
+			project.setProperty( "minimumAntVersion", "1.8");
+			]]>
+		</script>
+	</target><!-- End of target name="precopySpringDependencies" -->
+
+	<target name="checkOnSpringSchemaVersionProperty">
+		<if>
+			<isset property="springMvcSchemaVersion" />
+			<else>
+				<antcall target="echoMessageToLog">
+					<param name="message" 
+						value="Could not get schema version for Sring mvc" />
+				</antcall>
+				<fail message="Could not get schema version for Spring mvc" />
+			</else>
+		</if>
+		<if>
+			<isset property="springContextSchemaVersion" />
+			<else>
+				<antcall target="echoMessageToLog">
+					<param name="message" 
+						value="Could not get schema version for Spring context" />
+				</antcall>
+				<fail message="Could not get schema version for Spring context" />
+			</else>
+		</if>
+		<if>
+			<isset property="springBeansSchemaVersion" />
+			<else>
+				<antcall target="echoMessageToLog">
+					<param name="message" 
+						value="Could not get schema version for Spring beans" />
+				</antcall>
+				<fail message="Could not get schema version for Spring beans" />
+			</else>
+		</if>
+	</target><!-- End of target name="checkOnSpringSchemaVersionProperty" -->
+	
+	<target name="getSpringVersionInfoForApplicationContextSchema">
+		<description>
+			Output:
+				springMvcSchemaVersion
+				springContextSchemaVersion
+				springBeansSchemaVersion
+		</description>
+		<if>
+			<isreference refid="spring.dependency.fileset" />
+			<then>
+				<script language="javascript">
+					<![CDATA[
+					var springJarFileSet = project.getReference( "spring.dependency.fileset");
+					var includedFiles = springJarFileSet.getDirectoryScanner( project).getIncludedFiles();
+					
+					var echoMessageAntCall = project.createTask( "antcall");
+					echoMessageAntCall.init();
+					echoMessageAntCall.setTarget( "echoMessage");
+					var echoMessage_messageParam = echoMessageAntCall.createParam();
+					echoMessage_messageParam.setName( "message");
+					
+					for( var fileIndex = 0; fileIndex < includedFiles.length; fileIndex++) {
+					
+						var regExp = 
+							new RegExp( "(.*/)*(org\\.)?(spring(framework)?((\\.|-)[a-zA-Z]+)*)(-\\d.+)?\\.jar", "i");
+						
+						if ( regExp.test( includedFiles[ fileIndex])) {
+							var springComponent = RegExp.$3;
+							var springVersion = RegExp.$7;
+							
+							regExp = new RegExp( "-(\\d+)\\.(\\d+).*", "i");
+							if ( regExp.test( springVersion)) {
+								var springMajorVersion = RegExp.$1;
+								var springMinorVersion = RegExp.$2;
+								if ( isNaN( springMajorVersion)) {
+									echoMessage_messageParam.setValue(
+										"Could not find out whether " + project.getProperty( "springFile") + 
+										" is higher than version 2."
+										);
+									echoMessageAntCall.execute();
+								}
+								else {
+									regExp = new RegExp( "[\\.\\-](webmvc|context|beans)$", "i");
+									if ( regExp.test( springComponent)) {
+										springComponent = new String( RegExp.$1);
+										springComponent = springComponent.toLowerCase();
+										if ( springComponent.indexOf( "webmvc") > -1) {
+											echoMessage_messageParam.setValue(
+												"Schema version for spring-mvc is " +  
+												springMajorVersion + "." + springMinorVersion
+												);
+											echoMessageAntCall.execute();
+					
+											project.setProperty( 
+												"springMvcSchemaVersion",
+												springMajorVersion + "." + springMinorVersion
+												);
+										}
+										else if ( springComponent.indexOf( "context") > -1) {
+											echoMessage_messageParam.setValue(
+												"Schema version for spring-conext is " +  
+												springMajorVersion + "." + springMinorVersion
+												);
+											echoMessageAntCall.execute();
+					
+											project.setProperty( 
+												"springContextSchemaVersion",
+												springMajorVersion + "." + springMinorVersion
+												);
+										}
+										else {
+											echoMessage_messageParam.setValue(
+												"Schema version for spring-beans is " +  
+												springMajorVersion + "." + springMinorVersion
+												);
+											echoMessageAntCall.execute();
+					
+											project.setProperty( 
+												"springBeansSchemaVersion",
+												springMajorVersion + "." + springMinorVersion
+												);
+										}
+									}
+									else {
+										if ( Number( springMajorVersion) < 3) {
+											if ( springComponent.toLowerCase() == "spring") {
+												echoMessage_messageParam.setValue(
+													"Schema version for spring-conext and spring-beans is " +  
+													springMajorVersion + "." + springMinorVersion
+													);
+												echoMessageAntCall.execute();
+					
+												project.setProperty( 
+													"springMvcSchemaVersion",
+													springMajorVersion + "." + springMinorVersion
+													);
+					
+												project.setProperty( 
+													"springContextSchemaVersion",
+													springMajorVersion + "." + springMinorVersion
+													);
+												
+												project.setProperty( 
+													"springBeansSchemaVersion",
+													springMajorVersion + "." + springMinorVersion
+													);
+											}
+										}
+									}
+								}
+							}
+							else {
+								echoMessage_messageParam.setValue(
+									"Could not extract version information from \"" + 
+									project.getProperty( "springFile") + "\""
+									);
+								echoMessageAntCall.execute();
+							}
+						}
+					
+					} // for
+					
+					]]>
+				</script>
+
+				<antcall target="checkOnSpringSchemaVersionProperty" />
+			</then>
+			<else>
+				<if>
+					<isset property="springDir" />
+					<then>
+<!-- TODO Crack open either (spring-conext jar file and spring-beans jar file) or spring jar file. 
+Until implementing that way, just trust user-entered springVersion property value here. 
+-->
+<!-- Spew from META-INF/MANIFEST.MF of org.springframework.core-3.0.3.RELEASE.jar
+Implementation-Title: org.springframework.core
+Implementation-Version: 3.0.3.RELEASE
+ -->
+						<script language="javascript">
+							<![CDATA[
+							var springVersion = project.getProperty( "springVersion");
+							var regExp = new RegExp( "(\\d+\\.\\d+)([\\.\\-].+)*", "i");
+							if ( regExp.test( springVersion)) {
+								project.setProperty( 
+									"springMvcSchemaVersion",
+									RegExp.$1
+									);
+							
+								project.setProperty( 
+									"springContextSchemaVersion",
+									RegExp.$1
+									);
+								
+								project.setProperty( 
+									"springBeansSchemaVersion",
+									RegExp.$1
+									);
+							}
+							]]>
+						</script>
+						<antcall target="checkOnSpringSchemaVersionProperty" />
+					</then>
+					<else>
+						<antcall target="echoMessageToLog">
+							<param name="message" 
+								value="spring.dependency.fileset needs to have been set as fileset on spring .jar files." />
+						</antcall>
+						<fail message="spring.dependency.fileset needs to have been set as fileset on spring .jar files." />
+					</else>
+				</if>
+			</else>
+		</if>
+		
+	</target><!-- target name="getSpringVersionInfoForApplicationContextSchema" -->
+	
+	
+	<target name="copySpringFromFileSet">
+		
+		<antcall target="echoMessage">
+			<param name="message" value="Coping Spring library from maven local repository (${maven.repo.local}) to ${dependenciesDestDir}" />
+		</antcall>
+		
+		<antcallback target="getSpringVersionInfoForApplicationContextSchema" inheritrefs="true" 
+			return="springMvcSchemaVersion, springContextSchemaVersion, springBeansSchemaVersion" />
+				
+		<copy todir="${dependenciesDestDir}" verbose="true">
+			<fileset refid="spring.dependency.fileset" />
+			<!-- Usig regexp type mapper since not allowed nested include element with refid fileset -->
+			<mapper type="regexp" from="${mapperFrom}" to="${mapperTo}" />
+		</copy>
+		
+		<!-- Add copied .jar to Eclipse's .classpath file -->
+		<if>
+			<isset property="eclipseClassPath" />
+			<then>
+			    <script language="javascript">
+			    <![CDATA[
+			    	importClass( java.io.File);
+			    	importClass( javax.xml.parsers.DocumentBuilderFactory);
+			    	importClass( javax.xml.parsers.DocumentBuilder);
+			    	importClass( javax.xml.transform.TransformerFactory);
+			    	importClass( javax.xml.transform.Transformer);
+			    	importClass( javax.xml.transform.dom.DOMSource);
+			    	importClass( javax.xml.transform.stream.StreamResult);
+			    	importClass( javax.xml.transform.OutputKeys);
+			    	importClass( javax.xml.xpath.XPathFactory);
+			    	importClass( javax.xml.xpath.XPath);
+			    	importClass( javax.xml.xpath.XPathConstants);
+			    	importClass( org.w3c.dom.Document);
+			    	importClass( org.w3c.dom.NodeList);
+			    	importClass( org.w3c.dom.Node);
+			    	
+					var echoMessageAntCall = project.createTask( "antcall");
+					echoMessageAntCall.init();
+					echoMessageAntCall.setTarget( "echoMessage");
+					var echoMessage_messageParam = echoMessageAntCall.createParam();
+					echoMessage_messageParam.setName( "message");
+					
+					var eclipseClassPathFile = new File( project.getProperty( "eclipseClassPath"));
+					if ( eclipseClassPathFile.exists() && eclipseClassPathFile.isFile() && eclipseClassPathFile.canWrite() ){
+			    	
+						var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+						var documentBuilder = documentBuilderFactory.newDocumentBuilder();								
+						
+				    	var eclipseClassPathFileDoc = documentBuilder.parse( eclipseClassPathFile);
+			    		eclipseClassPathFileDoc.getDocumentElement().normalize();
+			    		var classPathElement = eclipseClassPathFileDoc.getDocumentElement();
+			    	
+						var springJarFileSet = project.getReference( "spring.dependency.fileset");
+						var includedFiles = springJarFileSet.getDirectoryScanner( project).getIncludedFiles();
+						
+				    	var xPath = XPathFactory.newInstance().newXPath();
+				    	var xPathExpression = "/classpath/classpathentry[@kind=\"output\"]/@path";
+				    	var nodeList = 
+				    		xPath.evaluate( xPathExpression, eclipseClassPathFileDoc, XPathConstants.NODESET);
+			    		if ( nodeList.getLength() < 1) {
+					    	echoMessage_messageParam.setValue( 
+					    		"Skipped adding .jar files of Spring and of dependencies to " + 
+					    		project.getProperty( "eclipseClassPath") + 
+					    		", since could not locate project's output directory from " + 
+			    				project.getProperty( "eclipseClassPathFile") + "."
+					    		);
+					    	echoMessageAntCall.execute();
+			    		}
+			    		else {
+			    			var classesPath = "";
+			    			for( var nodeIndex = 0; nodeIndex < nodeList.getLength(); nodeIndex++) {
+			    				classesPath = nodeList.item( nodeIndex).getNodeValue();
+			    			} // for
+							var regExp = 
+								new RegExp( "^((.*/)*WEB-INF/)classes$", "i");
+			    			var pathToLib = "";
+							if ( regExp.test( classesPath)) {
+			    				pathToLib = RegExp.$1 + "lib/";
+			    			}
+			    			if ( pathToLib.length < 1) {
+						    	echoMessage_messageParam.setValue( 
+						    		"Skipped adding .jar files of Spring and of dependencies to " + 
+						    		project.getProperty( "eclipseClassPath") + 
+						    		", since failed to get relative path of lib folder from project's root folder."
+						    		);
+						    	echoMessageAntCall.execute();
+			    			}
+					    	else {
+								regExp = new RegExp( "(.*[/\\\\])*((.)*)\\.jar", "i");
+						    	var elementAdditionFlag = false;
+								for( var fileIndex = 0; fileIndex < includedFiles.length; fileIndex++) {
+									if ( regExp.test( includedFiles[ fileIndex])) {
+										var jarFileName = RegExp.$2 + ".jar";
+								    	xPathExpression = 
+								    		"/classpath/classpathentry[@path=\"" + pathToLib + jarFileName + "\"]";
+								    	nodeList = 
+								    		xPath.evaluate( xPathExpression, eclipseClassPathFileDoc, XPathConstants.NODESET);
+								    	if ( nodeList.getLength() > 0) {
+									    	echoMessage_messageParam.setValue( 
+									    		"Skipped adding " + pathToLib + jarFileName + " to Eclipse's project class path" + 
+									    		", since " + project.getProperty( "eclipseClassPathFile") + " already contains it."
+									    		);
+									    	echoMessageAntCall.execute();
+					    					continue; // for
+					    				}
+					    				else {
+									    	var classpathentryElement = eclipseClassPathFileDoc.createElement( "classpathentry");
+					    					classpathentryElement.setAttribute( "kind", "lib");
+											classpathentryElement.setAttribute( "path", pathToLib + jarFileName);
+			    							classPathElement.appendChild( classpathentryElement);
+			    	
+									    	echoMessage_messageParam.setValue( 
+									    		"Adding " + jarFileName + " to Eclipse's project class path."
+									    		);
+									    	echoMessageAntCall.execute();
+			    	
+			    							elementAdditionFlag = true;
+					    				}
+						    		}
+						    	} // for
+			    				
+			    				if ( elementAdditionFlag) {
+									var transformerFactory = TransformerFactory.newInstance();
+									var transformer = transformerFactory.newTransformer();
+									transformer.setOutputProperty( OutputKeys.INDENT, "yes");
+									transformer.setOutputProperty( "{http\://xml.apache.org/xalan}indent-amount", "4");
+									var source = new DOMSource( eclipseClassPathFileDoc);
+									var result = 
+										new StreamResult( eclipseClassPathFile);
+									transformer.transform( source, result);
+			    	
+							    	echoMessage_messageParam.setValue( 
+							    		"Updated Eclipse's project class path file: " + 
+			    						project.getProperty( "eclipseClassPathFile")
+							    		);
+							    	echoMessageAntCall.execute();
+			    				}
+					    	}
+			    		}
+			    	}
+			    	else {
+			    		// Show message
+				    	echoMessage_messageParam.setValue( 
+				    		"Skipped adding .jar files of Spring and of dependencies to " + 
+				    		project.getProperty( "eclipseClassPath") + 
+				    		", since either " + project.getProperty( "eclipseClassPath") + 
+			    			" does not exist or is not writable as file."
+				    		);
+				    	echoMessageAntCall.execute();
+			    	}
+				]]>
+			    </script>
+			</then>
+		</if>
+	</target><!-- target name="copySpringFromFileSet" -->
+	
+	<target name="copySpringVer2">
+		<artifact:dependencies 
+			filesetId="spring.dependency.fileset" versionsId="dependency.versions" 
+			cacheDependencyRefs="true" dependencyRefsBuildFile="SpringDependencyRefs.xml">
+
+			<remoteRepository id="SpringFramework" url="http://mirrors.ibiblio.org/pub/mirrors/maven2/" />
+			<localRepository refid="local.repository" />
+			<!-- To check updated version of libraries, go to http://www.mvnbrowser.com 
+			-->
+			
+			<dependency groupId="org.springframework" artifactId="spring" version="${springVersion}"/>
+			<dependency groupId="org.springframework" artifactId="spring-webmvc" version="${springVersion}" />
+		</artifact:dependencies>
+		
+		<!-- Copy dependencies from maven local repository to lib sub-directory -->
+		<antcallback target="copySpringFromFileSet" inheritrefs="true" 
+			return="springMvcSchemaVersion, springContextSchemaVersion, springBeansSchemaVersion" />
+		
+		
+	</target><!-- target name="copySpringVer2" -->
+		
+	<target name="copySpringVer3">
+		<artifact:dependencies 
+			filesetId="spring.dependency.fileset" versionsId="dependency.versions" 
+			cacheDependencyRefs="true" dependencyRefsBuildFile="SpringDependencyRefs.xml">
+
+			<remoteRepository id="SpringFramework" url="http://mirrors.ibiblio.org/pub/mirrors/maven2/" />
+			<localRepository refid="local.repository" />
+			
+			<dependency groupId="org.springframework" artifactId="spring-core" version="${springVersion}" />
+			<dependency groupId="org.springframework" artifactId="spring-asm" version="${springVersion}" />
+			<dependency groupId="org.springframework" artifactId="spring-beans" version="${springVersion}" />
+			<dependency groupId="org.springframework" artifactId="spring-context" version="${springVersion}" />
+			<dependency groupId="org.springframework" artifactId="spring-web" version="${springVersion}" />
+			<dependency groupId="org.springframework" artifactId="spring-webmvc" version="${springVersion}" />
+			<dependency groupId="org.springframework" artifactId="spring-expression" version="${springVersion}" />
+			<dependency groupId="org.springframework" artifactId="spring-tx" version="${springVersion}" />
+			<dependency groupId="org.springframework" artifactId="spring-test" version="${springVersion}" />
+		</artifact:dependencies>
+			
+		<!-- Copy dependencies from maven local repository to lib sub-directory -->
+		<antcallback target="copySpringFromFileSet" inheritrefs="true" 
+			return="springMvcSchemaVersion, springContextSchemaVersion, springBeansSchemaVersion" />
+		
+		
+	</target><!-- target name="copySpringVer3" -->
+
+	<target name="prepApplicationContextXmlFile">
+		<if>
+			<resourceexists>
+				<file file="${destWebInfDir}/applicationContext.xml" />
+			</resourceexists>
+			<then>
+				<antcall target="echoMessage">
+					<param name="message" value="Backing ${destWebInfDir}/applicationContext.xml up to ${destWebInfDir}/applicationContext.xml${backFileExtention}" />
+				</antcall>
+				<copy file="${destWebInfDir}/applicationContext.xml" tofile="${destWebInfDir}/applicationContext.xml${backFileExtention}" />
+				
+				<antcall target="echoMessage">
+					<param name="message" value="Deleting ${destWebInfDir}/applicationContext.xml" />
+				</antcall>
+				<delete file="${destWebInfDir}/applicationContext.xml" />
+			</then>
+		</if>
+		<if>
+			<isset property="springApplicationContextFile" />
+			<then>
+				<if>
+					<resourceexists>
+						<file file="${springApplicationContextFile}" />
+					</resourceexists>
+					<then>
+						<antcall target="echoMessage">
+							<param name="message" value="Copying ${springApplicationContextFile} onto ${destWebInfDir}/applicationContext.xml" />
+						</antcall>
+						<copy file="${springApplicationContextFile}" tofile="${destWebInfDir}/applicationContext.xml" />
+					</then>
+					<else>
+						<antcall target="echoMessage">
+							<param name="message" value="Warning: ${springApplicationContextFile} does not exist." />
+						</antcall>
+					</else>
+				</if>
+			</then>
+		</if>
+		
+		<if>
+			<not>
+				<resourceexists>
+					<file file="${destWebInfDir}/applicationContext.xml" />
+				</resourceexists>
+			</not>
+			<then>
+				<!-- Create simple applicationContext.xml -->
+				<antcall target="checkOnSpringSchemaVersionProperty" />
+				
+				<antcall target="echoMessage">
+					<param name="message" value="Generating ${destWebInfDir}/applicationContext.xml file with simple case content as an example" />
+				</antcall>
+				
+				<if>
+					<matches pattern="[0-1]" string="${springMajorVersionInt}" />
+					<then>
+						<echo file="${destWebInfDir}/applicationContext.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!-- Auto-generated applicationContext.xml by PrepGaejSpringSupport.Ant.xml --&gt;
+&lt;!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd"&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-${springBeansSchemaVersion}.xsd"&gt;
+	
+	&lt;!-- For the cases that needs futher customization of view resolving, 
+	may use a ResourceBundleViewResolver and a SimpleUrlHandlerMapping class. --&gt;
+	&lt;bean id="viewResolver" 
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+		&lt;property name="prefix" value="/WEB-INF/jsp/" /&gt;
+		&lt;property name="suffix" value=".jsp" /&gt;
+		&lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView" /&gt;
+	&lt;/bean&gt;
+&lt;/beans&gt;
+						</echo>
+					</then>
+					<else>
+						<if>
+							<equals arg1="${springMajorVersionInt}" arg2="2" />
+							<then>
+								<echo file="${destWebInfDir}/applicationContext.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!-- Auto-generated applicationContext.xml by PrepGaejSpringSupport.Ant.xml --&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-${springBeansSchemaVersion}.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-${springContextSchemaVersion}.xsd"&gt;
+	
+	&lt;!-- For annotation support --&gt;
+	&lt;!-- Include basic annotation support --&gt;
+	&lt;!-- To know what annotation-config does, refer to http://swik.net/Spring/Interface21+Team+Blog/Spring+2.5%27s+Comprehensive+Annotation+Support/b1z6v
+ --&gt;								
+	&lt;context:annotation-config /&gt;           
+
+	&lt;!-- Take out comment after adding your package as comma-separated list of packages to search for annotated controllers. Append '.*' to search all sub-packages
+	&lt;context:component-scan base-package="com.gajjsfgwt.server" /&gt; 
+	--&gt;
+
+	&lt;bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"&gt;
+		&lt;property name="order" value="1"&gt;&lt;/property&gt;
+	&lt;/bean&gt;
+	&lt;!-- Enables use of annotations on controller methods to map URLs to methods and request params to method arguments  --&gt;
+	&lt;!-- Consider setting the AnnotationMethodHandlerAdapter's "synchronizeOnSession" flag to "true" if multiple requests are allowed to access a session concurrently. --&gt;									
+	&lt;bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" /&gt;
+	&lt;!-- End for annotation support --&gt;
+
+	&lt;bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"&gt;
+		&lt;property name="order" value="0"&gt;&lt;/property&gt;
+	&lt;/bean&gt;
+	&lt;bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"&gt;&lt;/bean&gt;
+
+	&lt;bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"&gt;
+		&lt;property name="basename" value="/WEB-INF/resource/messages"&gt;&lt;/property&gt;
+	&lt;/bean&gt;
+								
+	&lt;!-- For the cases that needs futher customization of view resolving, 
+	may use a ResourceBundleViewResolver and a SimpleUrlHandlerMapping class. --&gt;
+	&lt;bean id="viewResolver" 
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+		&lt;property name="prefix" value="/WEB-INF/jsp/" /&gt;
+		&lt;property name="suffix" value=".jsp" /&gt;
+		&lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView" /&gt;
+	&lt;/bean&gt;
+&lt;/beans&gt;
+								</echo>
+							</then>
+							<else>
+								<echo file="${destWebInfDir}/applicationContext.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!-- Auto-generated applicationContext.xml by PrepGaejSpringSupport.Ant.xml --&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-${springBeansSchemaVersion}.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-${springContextSchemaVersion}.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-${springMvcSchemaVersion}.xsd"&gt;
+	
+	&lt;!-- For Spring MVC --&gt;
+	&lt;!-- To know what annotation-config does, refer to http://swik.net/Spring/Interface21+Team+Blog/Spring+2.5%27s+Comprehensive+Annotation+Support/b1z6v
+ --&gt;								
+	&lt;context:annotation-config /&gt;
+	&lt;!-- Take out comment after adding your package as comma-separated list of packages to search for annotated controllers. Append '.*' to search all sub-packages
+	&lt;context:component-scan base-package="com.gajjsfgwt.server" /&gt; 
+	--&gt;
+	&lt;!-- Enables controllers mapped with @RequestMapping annotations, formatting annotations @NumberFormat @DateTimeFormat, and JSR 303 style validation --&gt;
+	&lt;!-- To know more what annotation-driven does, refer to http://stackoverflow.com/questions/3693397/howto-get-rid-of-mvcannotation-driven --&gt;
+	&lt;mvc:annotation-driven /&gt;
+									
+	&lt;!-- When needs to have session management, instead of using mvc:annotation-driven, setup AnnotationMethodHandlerAdapter  
+		(which enables use of annotations on controller methods to map URLs to methods and request params to method arguments) and  
+		DefaultAnnotationHandlerMapping --&gt;
+	&lt;!-- 
+	&lt;bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"&gt;
+		&lt;property name="order" value="1"&gt;&lt;/property&gt;
+	&lt;/bean&gt;
+	--&gt;								
+	&lt;!-- Consider setting the AnnotationMethodHandlerAdapter's "synchronizeOnSession" flag to "true" if multiple requests are allowed to access a session concurrently. --&gt;									
+	&lt;!-- 
+	&lt;bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" /&gt;
+	--&gt;								
+	
+	&lt;!-- Internationalized messages that can be displayed in a JSP page using the JSTL message format tag. 
+	The basenames property of ResourceBundleMessageSource is set to 'messages' which will then look for 
+	the default message resource of messages.properties. Based on different locales, other property files 
+	can be defined like messages_es.properties for Spanish. 
+	Referred at http://www.springbyexample.org/examples/basic-webapp-internationalization-spring-config.html 
+	http://forum.springsource.org/showthread.php?t=11883&amp;highlight=reloadableresourcebundlemessagesource
+	http://www.jroller.com/raible/entry/spring_mvc_s_reloadableresourcebundlemessagesource
+	 --&gt;
+	&lt;bean id="baseMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource"&gt;
+		&lt;property name="basenames" value="/WEB-INF/resource/messages" /&gt;
+		&lt;!-- In use of spring:message tag, show token key instead of throwing exception when token key is not found 
+		Referrer at http://www.jroller.com/raible/entry/spring_mvc_s_reloadableresourcebundlemessagesource
+		 --&gt;
+		&lt;property name="useCodeAsDefaultMessage" value="true" /&gt;
+	&lt;/bean&gt;
+	&lt;bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"&gt;
+		&lt;!-- After development, move properties files to be loaded by ResourceBundleMessageSource, since it's 
+		twice quicker than ReloadableResourceBundleMessageSource.
+		 --&gt;
+		&lt;property name="parentMessageSource" ref="baseMessageSource" /&gt;
+		&lt;!-- properties files for ReloadableResourceBundleMessageSource need to be located 
+		outside of class path, otherwise those will be cached and reload feature won't work because of that.
+		 --&gt;
+		&lt;property name="basenames" value="/WEB-INF/resource/dynamicMessages" /&gt;
+		&lt;property name="cacheSeconds" value="1" /&gt;
+	&lt;/bean&gt;
+	
+	&lt;!-- The LocaleChangeInterceptor is configured to look for the parameter name 'locale' to indicate 
+	a change of the user's locale, and is registered as an interceptor using the Spring MVC Namespace. 
+	(The Spring MVC Namespace is new in Spring 3.0.) 
+	For example, adding 'locale=es' to a URL would change the locale to Spanish.
+	Referred at http://www.springbyexample.org/examples/basic-webapp-internationalization-spring-config.html
+	 --&gt;
+	&lt;mvc:interceptors&gt;
+		&lt;bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"&gt;
+			&lt;property name="paramName" value="locale" /&gt;
+		&lt;/bean&gt;
+	&lt;/mvc:interceptors&gt;
+	
+	&lt;!-- The SessionLocaleResolver keeps the user's currently configured locale in session scope. 
+	http://www.springbyexample.org/examples/basic-webapp-internationalization-spring-config.html
+	 --&gt;
+	 &lt;!-- 
+	&lt;bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" /&gt;
+	 --&gt;
+	&lt;bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" /&gt;
+								
+	&lt;!-- For the cases that needs futher customization of view resolving, 
+	may use a ResourceBundleViewResolver and a SimpleUrlHandlerMapping class. --&gt;
+	&lt;bean id="viewResolver" 
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+		&lt;property name="prefix" value="/WEB-INF/jsp/" /&gt;
+		&lt;property name="suffix" value=".jsp" /&gt;
+		&lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView" /&gt;
+	&lt;/bean&gt;
+	&lt;!-- End for Spring MVC --&gt;
+								
+&lt;/beans&gt;
+								</echo>
+							</else>
+						</if>
+					</else>
+				</if>
+			</then>
+		</if>
+		
+	</target><!-- target name="prepApplicationContextXmlFile" -->
+	
+	<target name="copySpringDependencies" 
+		depends="precopySpringDependencies, PrepEnvTools.CommonAntUtils.checkAntVersion, defineAntContrib, setM2LocalRepositoryArtifact, setupWebInfProperties">
+				
+		<!-- For GAE/J Spring support *************************************************************
+		-->
+		
+		<!-- Copy Spring library file(s) to to lib sub-directory -->
+		<script language="javascript">
+			<![CDATA[
+			project.setProperty( "mapperFrom", "(.*[/\\\\])*(.*)\\.jar");
+			project.setProperty( "mapperTo", "\\2.jar");
+			]]>
+		</script>
+		
+		<condition property="springVersion" else="3.0.3.RELEASE">
+			<isset property="springVersion" />
+		</condition>
+		<if>
+			<isset property="springDir" />
+			<then>
+				<antcall target="echoMessage">
+					<param name="message" value="Coping Spring library file(s) from ${springDir} to ${dependenciesDestDir}" />
+				</antcall>
+				<copy todir="${dependenciesDestDir}" verbose="true">
+					<fileset dir="${springDir}">
+						<include name="**/*.jar" />
+					</fileset>
+					<!-- maven-ant-tasks' VersionMapper did not work to strip parts of directory and version from file path -->
+					<mapper type="regexp" from="${mapperFrom}" to="${mapperTo}" />
+				</copy>
+				
+				<antcallback target="getSpringVersionInfoForApplicationContextSchema" 
+					return="springMvcSchemaVersion, springContextSchemaVersion, springBeansSchemaVersion" />
+			</then>
+			<else>
+				<condition property="springMajorVersionInt" else="3">
+					<isset property="springMajorVersionInt" />
+				</condition>
+				<if>
+					<matches pattern="[0-9]" string="${springMajorVersionInt}" />
+					<else>
+						<antcall target="echoMessageToLog">
+							<param name="message" value="Value (&quot;${springMajorVersionInt}&quot;) of springMajorVersionInt property should be positive integer value." />
+						</antcall>
+						<fail message="Value (&quot;${springMajorVersionInt}&quot;) of springMajorVersionInt property should be positive integer value." />
+					</else>
+				</if>
+								
+				<switch value="${springMajorVersionInt}">
+					<case value="0">
+						<antcallback target="copySpringVer2" inheritrefs="true"
+							return="springMvcSchemaVersion, springContextSchemaVersion, springBeansSchemaVersion" />
+					</case>
+					<case value="1">
+						<antcallback target="copySpringVer2" inheritrefs="true"
+							return="springMvcSchemaVersion, springContextSchemaVersion, springBeansSchemaVersion" />
+					</case>
+					<case value="2">
+						<antcallback target="copySpringVer2" inheritrefs="true"
+							return="springMvcSchemaVersion, springContextSchemaVersion, springBeansSchemaVersion" />
+					</case>
+					<default>
+						<antcallback target="copySpringVer3" inheritrefs="true"
+							return="springMvcSchemaVersion, springContextSchemaVersion, springBeansSchemaVersion" />
+					</default>
+				</switch>
+				
+			</else>
+		</if>
+
+		<script language="javascript">
+			<![CDATA[
+			importClass(java.io.File);
+			
+			var libDirFileSet = project.createDataType( "fileset");
+			libDirFileSet.setDir( new File( project.getProperty( "dependenciesDestDir")));
+			libDirFileSet.setIncludes( "spring.jar");
+			libDirFileSet.setIncludes( "spring-*.jar");
+			libDirFileSet.setIncludes( "org.springframework.*.jar");
+			var includedFiles = libDirFileSet.getDirectoryScanner( project).getIncludedFiles();
+			var springFileRegExp = new RegExp( "(org\\.)?(spring(framework)?((\\.|-)[a-zA-Z]+)*)(-\\d.+)?\\.jar", "i");
+			var springFileFlag = false;
+			
+			var echoMessageAntCall = project.createTask( "antcall");
+			echoMessageAntCall.init();
+			echoMessageAntCall.setTarget( "echoMessage");
+			var echoMessage_messageParam = echoMessageAntCall.createParam();
+			echoMessage_messageParam.setName( "message");
+			
+			for( var includedFileIndex in includedFiles) {
+				var includedFile = includedFiles[ includedFileIndex];
+				if ( !springFileRegExp.test( includedFile)) continue;
+				echoMessage_messageParam.setValue( 
+					"Confirmed " + includedFile + " in " + project.getProperty( "dependenciesDestDir")
+					);
+				echoMessageAntCall.execute();
+				springFileFlag = true;
+			} // for
+			
+			if ( springFileFlag) project.setProperty( "dependencyCopyConfirmed", "true");
+			else project.setProperty( "dependencyCopyConfirmed", "false");
+			]]>
+		</script>
+		
+		<if>
+			<equals arg1="${dependencyCopyConfirmed}" arg2="false" />
+			<then>
+				<antcall target="echoMessageToLog">
+					<param name="message" value="Detected missing Spring library file(s) in ${dependenciesDestDir}" />
+				</antcall>
+				<fail message="Detected missing Spring library file(s) in ${dependenciesDestDir}" />
+			</then>
+		</if>
+
+<!-- TODO: It may be necessary to strip version number from files' name of Apache Commons Logging library, 
+	in order to make Apache Commons Logging library work.
+-->		
+		<script language="javascript">
+			<![CDATA[
+			importClass(java.io.File);
+			
+			var libDirFileSet = project.createDataType( "fileset");
+			libDirFileSet.setDir( new File( project.getProperty( "dependenciesDestDir")));
+			libDirFileSet.setIncludes( "commons-logging*.jar");
+			var includedFiles = libDirFileSet.getDirectoryScanner( project).getIncludedFiles();
+			var includedFileRegExp = /commons-logging(-.+)?\.jar/i
+			var commonsLoggingFlag = false;
+			var commonsLoggingApiFlag = false;
+			var commonsLoggingAdaptersFlag = false;
+			
+			var echoMessageAntCall = project.createTask( "antcall");
+			echoMessageAntCall.init();
+			echoMessageAntCall.setTarget( "echoMessage");
+			var echoMessage_messageParam = echoMessageAntCall.createParam();
+			echoMessage_messageParam.setName( "message");
+			
+			for( var includedFileIndex in includedFiles) {
+				var includedFile = includedFiles[ includedFileIndex];
+				if ( !includedFileRegExp.test( includedFile)) continue; // for
+				if ( new RegExp( "commons-logging(-\\d(\\.\\d)+)?\\.jar", "i").test( includedFile)) {
+					echoMessage_messageParam.setValue( 
+						"Confirmed " + includedFile + " in " + project.getProperty( "dependenciesDestDir")
+						);
+					echoMessageAntCall.execute();
+					commonsLoggingFlag = true;
+					break; // for
+				}
+			} // for
+			
+			if ( commonsLoggingFlag) {
+				project.setProperty( "dependencyCopyConfirmed", "true");
+				echoMessage_messageParam.setValue( 
+					"Apache Commons Logging libraries files are successfully copied to " + 
+					project.getProperty( "dependenciesDestDir")
+					);
+				echoMessageAntCall.execute();
+			}
+			else {
+				project.setProperty( "dependencyCopyConfirmed", "false");
+				if ( !commonsLoggingFlag) {
+					echoMessage_messageParam.setValue( "Missing commons-logging jar file");
+					echoMessageAntCall.execute();
+				}
+			}
+			]]>
+		</script>
+		
+		<if>
+			<equals arg1="${dependencyCopyConfirmed}" arg2="false" />
+			<then>
+				<antcall target="echoMessageToLog">
+					<param name="message" value="Detected missing Apache Commons Logging library file(s) in ${dependenciesDestDir}" />
+				</antcall>
+				<fail message="Detected missing Apache Commons Logging library file(s) in ${dependenciesDestDir}" />
+			</then>
+		</if>
+		
+
+		<!-- Prepare ${destWebInfDir}/applicationContext.xml file -->
+		<antcall target="prepApplicationContextXmlFile" />
+		
+		<!-- Add DispatcherServlet to web.xml -->
+		<antcall target="echoMessage">
+			<param name="message" value="Adding org.springframework.web.servlet.DispatcherServlet servlet to ${destWebXmlFile}" />
+		</antcall>
+		<if>
+			<scriptcondition language="javascript" value="true">
+				<![CDATA[
+				importClass( java.io.File);
+				importClass( javax.xml.parsers.DocumentBuilderFactory);
+				importClass( javax.xml.parsers.DocumentBuilder);
+				importClass( javax.xml.transform.TransformerFactory);
+				importClass( javax.xml.transform.Transformer);
+				importClass( javax.xml.transform.dom.DOMSource);
+				importClass( javax.xml.transform.stream.StreamResult);
+				importClass( javax.xml.transform.OutputKeys);
+				importClass( javax.xml.xpath.XPathFactory);
+				importClass( javax.xml.xpath.XPath);
+				importClass( javax.xml.xpath.XPathConstants);
+				importClass( org.w3c.dom.Document);
+				importClass( org.w3c.dom.NodeList);
+				importClass( org.w3c.dom.Node);
+
+				var echoMessageAntCall = project.createTask( "antcall");
+				echoMessageAntCall.init();
+				echoMessageAntCall.setTarget( "echoMessage");
+				var echoMessage_messageParam = echoMessageAntCall.createParam();
+				echoMessage_messageParam.setName( "message");
+				
+				var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+				var documentBuilder = documentBuilderFactory.newDocumentBuilder();								
+				
+				var webXmlFile = new File( project.getProperty( "orignWebXmlFile"));
+				var webXmldoc = null;
+				var webAppElement = null;
+			
+				if ( webXmlFile.exists()){
+					webXmldoc = documentBuilder.parse( webXmlFile);
+					webXmldoc.getDocumentElement().normalize();
+					webAppElement = webXmldoc.getDocumentElement();
+				}
+				else {
+					webXmldoc = documentBuilder.newDocument();
+					webXmldoc.setXmlVersion( "1.0");
+					webAppElement = webXmldoc.createElement( "web-app");
+					webXmldoc.appendChild( webAppElement);
+					webAppElement.normalize();
+				}
+			
+				webAppElement.appendChild( 
+					webXmldoc.createComment( "For Spring on GAE/J \n"));
+				webAppElement.appendChild( 
+					webXmldoc.createComment( 
+						"Please make modification to suite for your environment, \n" + 
+						"since these elements below have been autogenerated as just simple sample. \n"
+						)
+					);
+				webAppElement.appendChild( 
+					webXmldoc.createComment( 
+						"Be mindful if you will use stateful view technology with stateless Spring \n"
+						)
+					);
+				
+				var xPath = XPathFactory.newInstance().newXPath();
+				var elementAdditionFlag = false;
+				
+				// About org.springframework.web.context.ContextLoaderListener --------------------
+				var xPathExpression = 
+					'/web-app/listener[listener-class="org.springframework.web.context.ContextLoaderListener"]';
+				var nodeList = 
+					xPath.evaluate( xPathExpression, webXmldoc, XPathConstants.NODESET);
+				if ( nodeList.getLength() > 0) {
+					echoMessage_messageParam.setValue( 
+						"Skipped adding org.springframework.web.context.ContextLoaderListener listener to " + 
+						project.getProperty( "destWebXmlFile") + 
+						", since " + project.getProperty( "orignWebXmlFile") + " already contains."
+						);
+					echoMessageAntCall.execute();
+				}
+				else {
+					var listenerElement = webXmldoc.createElement( "listener");
+					
+					listenerElement.appendChild( 
+						webXmldoc.createComment( 
+							"Conveniently load ApplicationContext. \n" +
+							"For info, refer to http://static.springsource.org/spring/docs/current/spring-framework-reference/htmlsingle/spring-framework-reference.html#context-create. \n"
+							)
+						);
+					listenerElement.appendChild( 
+						webXmldoc.createComment( 
+							"This listener should be registered after Log4jConfigListener in web.xml, if the latter is used. \n"
+							)
+						);
+				
+					var listenerChildElement = webXmldoc.createElement( "listener-class");
+					listenerChildElement.appendChild( 
+						webXmldoc.createTextNode( "org.springframework.web.context.ContextLoaderListener"));
+					listenerElement.appendChild( listenerChildElement);
+				
+					webAppElement.appendChild( listenerElement);
+				
+					elementAdditionFlag = true;
+				
+					echoMessage_messageParam.setValue( 
+						"The Spring's ContextLoaderListener element has been added to " + 
+						project.getProperty( "destWebXmlFile"));
+					echoMessageAntCall.execute();
+				}
+				// --------------------------------------------------------------------------------
+				
+				// About org.springframework.web.context.request.RequestContextListener -----------
+				xPathExpression = 
+					"/web-app/listener[listener-class=\"org.springframework.web.context.request.RequestContextListener\"]";
+				nodeList = 
+					xPath.evaluate( xPathExpression, webXmldoc, XPathConstants.NODESET);
+				if ( nodeList.getLength() > 0) {
+					echoMessage_messageParam.setValue( 
+						"Skipped adding org.springframework.web.context.request.RequestContextListener listener to " + 
+						project.getProperty( "destWebXmlFile") + 
+						", since " + project.getProperty( "orignWebXmlFile") + " already contains."
+						);
+					echoMessageAntCall.execute();
+				}
+				else {
+					var listenerElement = webXmldoc.createElement( "listener");
+					
+					listenerElement.appendChild( 
+						webXmldoc.createComment( 
+							"To enable webapplication-related scopes like request, session, and global session on Spring. \n" +
+							"RequestContextListener binds the HTTP request object to the Thread that is servicing that request. \n" + 
+							"This makes beans that are request- and session-scoped available further down the call chain. \n"
+							)
+						);
+				
+					var listenerChildElement = webXmldoc.createElement( "listener-class");
+					listenerChildElement.appendChild( 
+						webXmldoc.createTextNode( "org.springframework.web.context.request.RequestContextListener"));
+					listenerElement.appendChild( listenerChildElement);
+				
+					webAppElement.appendChild( listenerElement);
+					
+					elementAdditionFlag = true;
+				
+					echoMessage_messageParam.setValue( 
+						"The Spring's RequestContextListener element has been added to " + 
+						project.getProperty( "destWebXmlFile"));
+					echoMessageAntCall.execute();
+				}
+				// --------------------------------------------------------------------------------
+				
+				// org.springframework.web.filter.CharacterEncodingFilter -------------------------
+				var filterFullName = "org.springframework.web.filter.CharacterEncodingFilter";
+				xPathExpression = 
+					"/web-app/filter[filter-class=\"" + filterFullName + "\"]";
+				nodeList = 
+					xPath.evaluate( xPathExpression, webXmldoc, XPathConstants.NODESET);
+				if ( nodeList.getLength() > 0) {
+					echoMessage_messageParam.setValue( 
+						"Skipped adding " + filterFullName + " filter to " + 
+						project.getProperty( "destWebXmlFile") + 
+						", since " + project.getProperty( "orignWebXmlFile") + " already contains."
+						);
+					echoMessageAntCall.execute();
+				}
+				else {
+					var filterElement = webXmldoc.createElement( "filter");
+					filterElement.appendChild( 
+						webXmldoc.createComment( 
+							"Request's character encoding type setting by Spring. \n" +
+							"For info, refer to http://www.springbyexample.org/examples/basic-webapp-internationalization.html. \n"  
+							)
+						);
+				
+					var filterChildElement = webXmldoc.createElement( "filter-name");
+					filterChildElement.appendChild( 
+						webXmldoc.createTextNode( filterFullName));
+					filterElement.appendChild( filterChildElement);
+				
+					filterChildElement = webXmldoc.createElement( "filter-class");
+					filterChildElement.appendChild( 
+						webXmldoc.createTextNode( filterFullName));
+					filterElement.appendChild( filterChildElement);
+					
+					filterChildElement = webXmldoc.createElement( "init-param");
+					var initParamChildElement = webXmldoc.createElement( "param-name");
+					initParamChildElement.appendChild( 
+						webXmldoc.createTextNode( "encoding"));
+					filterChildElement.appendChild( initParamChildElement);
+					initParamChildElement = webXmldoc.createElement( "param-value");
+					initParamChildElement.appendChild( 
+						webXmldoc.createTextNode( "UTF-8"));
+					filterChildElement.appendChild( initParamChildElement);
+				
+					filterElement.appendChild( filterChildElement);
+				
+					webAppElement.appendChild( filterElement);
+				
+					var filterMappingElement = webXmldoc.createElement( "filter-mapping");
+					var filterMappingChildElement = webXmldoc.createElement( "filter-name");
+					filterMappingChildElement.appendChild( 
+						webXmldoc.createTextNode( filterFullName));
+					filterMappingElement.appendChild( filterMappingChildElement);
+					
+					filterMappingChildElement = webXmldoc.createElement( "url-pattern");
+					filterMappingChildElement.appendChild( 
+						webXmldoc.createTextNode( "/*"));
+					filterMappingElement.appendChild( filterMappingChildElement);
+				
+					webAppElement.appendChild( filterMappingElement);
+				
+					elementAdditionFlag = true;
+				
+					echoMessage_messageParam.setValue( 
+						"The Spring's CharacterEncodingFilter element has been added to " + 
+						project.getProperty( "destWebXmlFile"));
+					echoMessageAntCall.execute();
+				}
+				// --------------------------------------------------------------------------------
+				
+				// --------------------------------------------------------------------------------
+				var servletFullName = "org.springframework.web.servlet.DispatcherServlet";
+				xPathExpression = 
+					"/web-app/servlet[servlet-class=\"" + servletFullName + "\"]";
+				var sequenceTerminationFlag = false;
+				if ( nodeList.getLength() > 0) {
+					echoMessage_messageParam.setValue( 
+						"Skipped adding " + servletFullName + " servlet to " + project.getProperty( "destWebXmlFile") + 
+						", since " + project.getProperty( "orignWebXmlFile") + " already contains."
+						);
+					echoMessageAntCall.execute();
+					sequenceTerminationFlag = true;
+				}
+				
+				if ( !sequenceTerminationFlag) {
+					xPath = XPathFactory.newInstance().newXPath();
+					xPathExpression = "/web-app/servlet[servlet-name=\"" + servletFullName + "\"]";
+					nodeList = 
+						xPath.evaluate( xPathExpression, webXmldoc, XPathConstants.NODESET);
+				
+					if ( nodeList.getLength() > 0) {
+						echoMessage_messageParam.setValue( 
+							"Skipped adding " + servletFullName + " servlet to " + project.getProperty( "destWebXmlFile") + 
+							", since " + project.getProperty( "orignWebXmlFile") + 
+							" already contains the servelet named as \"" + servletFullName + "\" ."
+							);
+						echoMessageAntCall.execute();
+						sequenceTerminationFlag = true;
+					}
+				}
+				
+				if ( !sequenceTerminationFlag) {
+					var servletElement = webXmldoc.createElement( "servlet");
+					
+					var servletChildElement = webXmldoc.createElement( "servlet-name");
+					servletChildElement.appendChild( 
+						webXmldoc.createTextNode( servletFullName));
+					servletElement.appendChild( servletChildElement);
+					
+					servletChildElement = webXmldoc.createElement( "servlet-class");
+					servletChildElement.appendChild( 
+						webXmldoc.createTextNode( servletFullName));
+					servletElement.appendChild( servletChildElement);
+			
+					// Specify applicationContext.xml file
+					servletChildElement = webXmldoc.createElement( "init-param");
+				
+					var initParamChildElement = webXmldoc.createElement( "param-name");
+					initParamChildElement.appendChild( 
+						webXmldoc.createTextNode( "contextConfigLocation"));
+					servletChildElement.appendChild( initParamChildElement);
+				
+					initParamChildElement = webXmldoc.createElement( "param-value");
+/* Comment out due to switch to use ContextLoaderListener
+					initParamChildElement.appendChild( 
+						webXmldoc.createTextNode( "/WEB-INF/applicationContext.xml"));
+*/				
+					servletChildElement.appendChild( initParamChildElement);
+					
+					servletElement.appendChild( servletChildElement);
+				
+					// Specify load order
+					servletChildElement = webXmldoc.createElement( "load-on-startup");
+					servletChildElement.appendChild(
+						webXmldoc.createTextNode( "1"));
+				
+					servletElement.appendChild( servletChildElement);
+				
+					webAppElement.appendChild( servletElement);
+
+				
+					webAppElement.appendChild( 
+						webXmldoc.createComment( 
+							"Please make modification on url-pattern to suite for your environment. \n"
+							)
+						);
+					var servletMappingElement = webXmldoc.createElement( "servlet-mapping");
+					var servletMappingChildElement = webXmldoc.createElement( "servlet-name");
+					servletMappingChildElement.appendChild( 
+						webXmldoc.createTextNode( servletFullName));
+					servletMappingElement.appendChild( servletMappingChildElement);
+					
+					servletMappingChildElement = webXmldoc.createElement( "url-pattern");
+					servletMappingChildElement.appendChild( 
+						webXmldoc.createTextNode( "/app/*"));
+					servletMappingElement.appendChild( servletMappingChildElement);
+				
+					webAppElement.appendChild( servletMappingElement);
+				
+					elementAdditionFlag = true;
+				
+					echoMessage_messageParam.setValue( 
+						"The Spring's DispatcherServlet element has been added to " + 
+						project.getProperty( "destWebXmlFile"));
+					echoMessageAntCall.execute();
+				}
+				
+				if ( elementAdditionFlag) {
+					var transformerFactory = TransformerFactory.newInstance();
+					var transformer = transformerFactory.newTransformer();
+					transformer.setOutputProperty( OutputKeys.INDENT, "yes");
+					transformer.setOutputProperty( "{http\://xml.apache.org/xalan}indent-amount", "4");
+					var source = new DOMSource( webXmldoc);
+					var result = 
+						new StreamResult( new File( project.getProperty( "destWebXmlFile")));
+					transformer.transform( source, result);
+		
+					self.setValue( false);
+				}
+				]]>
+			</scriptcondition>
+			<then>
+				<antcall target="echoMessage">
+					<param name="message" 
+						value="Did not add the elements for Spring configuration to ${destWebXmlFile}" />
+				</antcall>
+			</then>
+			<else>
+				<!-- Check whether spring-webmvc jar exists in ${dependenciesDestDir} (which contains 
+					spring-form.tld and spring.tld files) for the case of that springDir property is specified. -->
+				<!-- Those files are located at like:
+					spring-framework-3.0.3.RELEASE\projects\org.springframework.web.servlet\src\main\resources\META-INF\spring-form.tld
+					spring-framework-3.0.3.RELEASE\projects\org.springframework.web.servlet\src\main\resources\META-INF\spring.tld
+				-->
+				<!-- spring-form.tld and spring.tld files are not found in spring-2.5.6.jar -->
+				<if>
+					<isset property="springDir" />
+					<then>
+						<if>
+							<scriptcondition language="javascript" value="true">
+								<![CDATA[
+								importClass(java.io.File);
+								var libDirFileSet = project.createDataType( "fileset");
+								libDirFileSet.setDir( new File( project.getProperty( "dependenciesDestDir")));
+								libDirFileSet.setIncludes( "spring-webmvc*.jar");
+								libDirFileSet.setIncludes( "org.springframework.web.servlet*.jar");
+								var includedFiles = libDirFileSet.getDirectoryScanner( project).getIncludedFiles();
+								
+								var springFileRegExp = 
+									new RegExp( "(org\\.)?(spring(framework)?((\\.|-)[a-zA-Z]+)*)(-\\d.+)?\\.jar", "i");
+								var springFileFlag = false;
+								
+								var echoMessageAntCall = project.createTask( "antcall");
+								echoMessageAntCall.init();
+								echoMessageAntCall.setTarget( "echoMessage");
+								var echoMessage_messageParam = echoMessageAntCall.createParam();
+								echoMessage_messageParam.setName( "message");
+								
+								var springTldFlag = false;
+								var springFormTldFlag = false;
+								for( var includedFileIndex in includedFiles) {
+									var includedFile = includedFiles[ includedFileIndex];
+									if ( !springFileRegExp.test( includedFile)) continue;
+									var zipFileSet = project.createDataType( "zipfileset");
+									zipFileSet.setSrc( 
+										new File( 
+											project.getProperty( "dependenciesDestDir") + "/" + includedFile
+											)
+										);
+									zipFileSet.setIncludes( "**/spring.tld");
+									zipFileSet.setIncludes( "**/spring-form.tld");
+									var springTldFiles = 
+										zipFileSet.getDirectoryScanner( project).getIncludedFiles();
+									var regExp = new RegExp( ".*/(spring|spring-form).tld", "i");
+									var springTldConfirmed = false;
+									var springFormTldConfirmed = false;
+									for( var tldIndex in springTldFiles) {
+										if ( regExp.test( springTldFiles[ tldIndex])) {
+											if ( "spring".equalsIgnoreCase( RegExp.$1)) {
+												springTldConfirmed = true;
+												echoMessage_messageParam.setValue( 
+													"Confirmed " + springTldFiles[ tldIndex] + " existance in " + 
+													project.getProperty( "dependenciesDestDir") + "/" + includedFile
+													);
+												echoMessageAntCall.execute();
+											}
+											else {
+												springFormTldConfirmed = true;
+												echoMessage_messageParam.setValue( 
+													"Confirmed " + springTldFiles[ tldIndex] + " existance in " + 
+													project.getProperty( "dependenciesDestDir") + "/" + includedFile
+													);
+												echoMessageAntCall.execute();
+											}
+											if ( springTldConfirmed && springFormTldConfirmed) break; // for
+										}
+									} // for
+								} // for
+								
+								if ( !springFormTldConfirmed) {
+									echoMessage_messageParam.setValue( 
+										"Could not find spring-form.tld in inside of .jar files at " + 
+										project.getProperty( "dependenciesDestDir")
+										);
+									echoMessageAntCall.execute();
+								}
+								if ( !springTldConfirmed) {
+									echoMessage_messageParam.setValue( 
+										"Could not find spring.tld in inside of .jar files at " + 
+										project.getProperty( "dependenciesDestDir")
+										);
+									echoMessageAntCall.execute();
+								}
+								else {
+									self.setValue( false);
+								}
+								]]>
+							</scriptcondition>
+							<then>
+								<property name="springTldConfirmed" value="false" />
+							</then>
+							<else>
+								<property name="springTldConfirmed" value="true" />
+							</else>
+						</if>
+					</then>
+					<else>
+						<property name="springTldConfirmed" value="true" />
+						<property name="springFormTldConfirmed" value="true" />
+					</else>
+				</if>
+				
+				<if>
+					<istrue value="${springTldConfirmed}" />
+					<then>
+						<!-- Add defaultHtmlEscape context-param to web.xml
+							 defaultHtmlEscape is in spring.tld
+						-->
+						<antcall target="echoMessage">
+							<param name="message" value="Adding defaultHtmlEscape context-param elements to ${destWebXmlFile}" />
+						</antcall>
+						<if>
+							<scriptcondition language="javascript" value="true">
+								<![CDATA[
+								importClass( java.io.File);
+								importClass( javax.xml.parsers.DocumentBuilderFactory);
+								importClass( javax.xml.parsers.DocumentBuilder);
+								importClass( javax.xml.transform.TransformerFactory);
+								importClass( javax.xml.transform.Transformer);
+								importClass( javax.xml.transform.dom.DOMSource);
+								importClass( javax.xml.transform.stream.StreamResult);
+								importClass( javax.xml.transform.OutputKeys);
+								importClass( javax.xml.xpath.XPathFactory);
+								importClass( javax.xml.xpath.XPath);
+								importClass( javax.xml.xpath.XPathConstants);
+								importClass( org.w3c.dom.Document);
+								importClass( org.w3c.dom.NodeList);
+								importClass( org.w3c.dom.Node);
+
+								var echoMessageAntCall = project.createTask( "antcall");
+								echoMessageAntCall.init();
+								echoMessageAntCall.setTarget( "echoMessage");
+								var echoMessage_messageParam = echoMessageAntCall.createParam();
+								echoMessage_messageParam.setName( "message");
+								
+								var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+								var documentBuilder = documentBuilderFactory.newDocumentBuilder();								
+								
+								var webXmlFile = new File( project.getProperty( "destWebXmlFile"));
+								var webXmldoc = null;
+								var webAppElement = null;
+								var sequenceTerminationFlag = false;
+							
+								if ( webXmlFile.exists()){
+									webXmldoc = documentBuilder.parse( webXmlFile);
+									webXmldoc.getDocumentElement().normalize();
+									webAppElement = webXmldoc.getDocumentElement();
+								}
+								else {
+									webXmldoc = documentBuilder.newDocument();
+									webXmldoc.setXmlVersion( "1.0");
+									webAppElement = webXmldoc.createElement( "web-app");
+									webXmldoc.appendChild( webAppElement);
+									webAppElement.normalize();
+								}
+						
+								var xPath = XPathFactory.newInstance().newXPath();
+								var xPathExpression = "/web-app/context-param[param-name=\"defaultHtmlEscape\"]";
+								var nodeList = 
+									xPath.evaluate( xPathExpression, webXmldoc, XPathConstants.NODESET);
+								
+								if ( nodeList.getLength() > 0) {
+									echoMessage_messageParam.setValue( 
+										"Skipped adding context-param element for defaultHtmlEscape to " + project.getProperty( "destWebXmlFile") + 
+										", since " + project.getProperty( "orignWebXmlFile") + " already contains "
+										);
+									echoMessageAntCall.execute();
+									sequenceTerminationFlag = true;
+								}
+								else {
+									var contextParamElement = webXmldoc.createElement( "context-param");
+									contextParamElement.appendChild( 
+										webXmldoc.createComment( 
+											"Turn HTML escaping on appiication-wide"
+											)
+										);
+									var contextParamChildElement = webXmldoc.createElement( "param-name");
+									contextParamChildElement.appendChild( 
+										webXmldoc.createTextNode( "defaultHtmlEscape"));
+									contextParamElement.appendChild( contextParamChildElement);
+									
+									contextParamChildElement = webXmldoc.createElement( "param-value");
+									contextParamChildElement.appendChild( 
+										webXmldoc.createTextNode( "true"));
+									contextParamElement.appendChild( contextParamChildElement);
+							
+									webAppElement.appendChild( contextParamElement);
+								}
+							
+								if( !sequenceTerminationFlag) {
+									var transformerFactory = TransformerFactory.newInstance();
+									var transformer = transformerFactory.newTransformer();
+									transformer.setOutputProperty( OutputKeys.INDENT, "yes");
+									transformer.setOutputProperty( "{http\://xml.apache.org/xalan}indent-amount", "4");
+									var source = new DOMSource( webXmldoc);
+									var result = 
+										new StreamResult( new File( project.getProperty( "destWebXmlFile")));
+									transformer.transform( source, result);
+						
+									echoMessage_messageParam.setValue( 
+										"The Spring related elements have been added to " + project.getProperty( "destWebXmlFile"));
+									echoMessageAntCall.execute();
+									
+									self.setValue( false);
+								}
+								]]>
+							</scriptcondition>
+							<then>
+								<antcall target="echoMessage">
+									<param name="message" 
+										value="Warning: Could not add defaultHtmlEscape context-param elements to ${destWebXmlFile}. Please configure HTML escaping setting manually if you like to use." />
+								</antcall>
+							</then>
+							<else>
+								<antcall target="echoMessage">
+									<param name="message" 
+										value="Note: Added defaultHtmlEscape context-param element to ${destWebXmlFile}. Please remove the added defaultHtmlEscape context-param element manually if you do not need it." />
+								</antcall>
+							</else>
+						</if>
+					</then>
+				</if>
+				
+			</else>
+		</if>
+		
+		<!-- End for GAE/J Spring support *********************************************************
+		-->
+	</target><!-- target name="copySpringDependencies" -->
+	
+</project>
