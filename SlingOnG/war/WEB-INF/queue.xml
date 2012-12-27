@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<queue-entries>
+    <queue>
+        <name>slim3-gtx-queue</name>
+        <rate>10/s</rate>
+        <bucket-size>10</bucket-size>
+    </queue>
+</queue-entries>
