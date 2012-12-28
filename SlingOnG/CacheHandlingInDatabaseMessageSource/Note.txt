@@ -1,0 +1,458 @@
+After confirming invocation of methods in org.springframework.transaction.support.AbstractPlatformTransactionManager,
+	- Remove aspectjexperiement1.jar from the build path and the class path (WEB-INF/lib/aspectjexperiement1.jar)
+	- Add spring-tx-3.0.4.RELEASE.jar to the class path (WEB-INF/lib) and the build path
+
+	
+GlobalTransaction instance after doGetTransaction method and isExistingTransaction method
+	doGetTransaction
+		currentGtx = Datastore.getCurrentGlobalTransaction();
+			GlobalTransactionState.ActiveGlobalTransaction
+			slim3GtxObjMapThreadLocal.get().get( currentGtx.getId());
+	
+	isExistingTransaction( Object transaction)
+		gtx = (GlobalTransaction)transaction;
+			GlobalTransactionState.GlobalTransactionInstance
+			slim3GtxObjMapThreadLocal.get().get( gtx.getId()) != null
+			
+	current active GlobalTransaction
+	slim3GtxObjMapThreadLocal.get().get( gtx.getId()) != null
+
+	
+State of transaction Object member field and newTransaction boolean member field for each propagation behavior at newTransactionState method
+	switch( definition.getPropagationBehavior()) {
+	case TransactionAttribute.PROPAGATION_REQUIRES_NEW:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is ?
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is true
+		break;
+	case TransactionAttribute.PROPAGATION_NESTED:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is ?
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is true
+		break;
+		
+	case TransactionAttribute.PROPAGATION_REQUIRED:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is ?
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is false
+		break;
+	case TransactionAttribute.PROPAGATION_NEVER:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is null
+		 // newTransaction is true
+		break;
+		/* Won't reach here since threw IllegalTransactionStateException in handleExistingTransaction method
+		 */
+		break;
+	case TransactionAttribute.PROPAGATION_NOT_SUPPORTED:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is null
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is null
+		 // newTransaction is false
+		break;
+	case TransactionAttribute.PROPAGATION_SUPPORTS:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is null
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is false
+		break;
+	case TransactionAttribute.PROPAGATION_MANDATORY:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		/* Won't reach here since threw IllegalTransactionStateException in getTransaction method
+		 */
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is false
+		break;
+	default:
+	
+	}
+	switch( definition.getPropagationBehavior()) {
+	case TransactionAttribute.PROPAGATION_REQUIRES_NEW:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is ?
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is true
+		break;
+	case TransactionAttribute.PROPAGATION_NESTED:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is ?
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is true
+		break;
+		
+	case TransactionAttribute.PROPAGATION_REQUIRED:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is ?
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is false
+		break;
+	case TransactionAttribute.PROPAGATION_NEVER:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is null
+		 // newTransaction is true
+		break;
+		/* Won't reach here since threw IllegalTransactionStateException in handleExistingTransaction method
+		 */
+		break;
+	case TransactionAttribute.PROPAGATION_NOT_SUPPORTED:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is null
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is null
+		 // newTransaction is false
+		break;
+	case TransactionAttribute.PROPAGATION_SUPPORTS:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		 // transaction Object is null
+		 // newTransaction is true
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is false
+		break;
+	case TransactionAttribute.PROPAGATION_MANDATORY:
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is either null, or current active GlobalTransaction 
+		 * no matter what is either managed by this Slim3PlatformTransactionManager ot not.
+		 */
+		/* Won't reach here since threw IllegalTransactionStateException in getTransaction method
+		 */
+		break;
+		/* Through getTransaction method and handleExistingTransaction method previously, 
+		 * when logic flow reached here, gtx is assured as current active GlobalTransaction instance  
+		 * as well as managed by this Slim3PlatformTransactionManager
+		 */
+		 // transaction Object is current active GlobalTransaction instance
+		 // newTransaction is false
+		break;
+	default:
+	
+	}
+
+
+Log records of getTransaction method for nested transaction 
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing TransactionStatus org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Object slingong.datastore.Slim3PlatformTransactionManager.doGetTransaction()
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Object slingong.datastore.Slim3PlatformTransactionManager.doGetTransaction()
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing boolean slingong.datastore.Slim3PlatformTransactionManager.isExistingTransaction(Object)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited boolean slingong.datastore.Slim3PlatformTransactionManager.isExistingTransaction(Object)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing TransactionStatus org.springframework.transaction.support.AbstractPlatformTransactionManager.handleExistingTransaction(TransactionDefinition, Object, boolean)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing boolean org.springframework.transaction.support.AbstractPlatformTransactionManager.isNestedTransactionAllowed()
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited boolean org.springframework.transaction.support.AbstractPlatformTransactionManager.isNestedTransactionAllowed()
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing boolean slingong.datastore.Slim3PlatformTransactionManager.useSavepointForNestedTransaction()
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited boolean slingong.datastore.Slim3PlatformTransactionManager.useSavepointForNestedTransaction()
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing int org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransactionSynchronization()
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited int org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransactionSynchronization()
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing DefaultTransactionStatus slingong.datastore.Slim3PlatformTransactionManager.newTransactionStatus(TransactionDefinition, Object, boolean, boolean, boolean, Object)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void slingong.datastore.Slim3PlatformTransactionManager.validateIsolationLevel(int)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void slingong.datastore.Slim3PlatformTransactionManager.validateIsolationLevel(int)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void slingong.datastore.Slim3PlatformTransactionManager.setSlim3AsnyncTimeout(int)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void slingong.datastore.Slim3PlatformTransactionManager.setSlim3AsnyncTimeout(int)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing boolean org.springframework.transaction.support.AbstractPlatformTransactionManager.isNestedTransactionAllowed()
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited boolean org.springframework.transaction.support.AbstractPlatformTransactionManager.isNestedTransactionAllowed()
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManager newTransactionStatus
+	INFO: Going to provide nested propagation behavior by nested begin and commit/rollback calls on new GlobalTransaction instance over the transaction what has already begun GlobalTransaction instance (ID:0).
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing boolean slingong.datastore.Slim3PlatformTransactionManager.validateCurrentActiveGlobalTransactionToParticipate(GlobalTransaction, TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited boolean slingong.datastore.Slim3PlatformTransactionManager.validateCurrentActiveGlobalTransactionToParticipate(GlobalTransaction, TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing GlobalTransaction slingong.datastore.Slim3PlatformTransactionManager.beginGlogalTransaction(GlobalTransaction, Set, TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing String slingong.datastore.Slim3PlatformTransactionManager.getPropagationBehaviorStr(int)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited String slingong.datastore.Slim3PlatformTransactionManager.getPropagationBehaviorStr(int)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManager beginGlogalTransaction
+	INFO: Slim3 GlobalTransaction (ID:6) began successfully under PROPAGATION_NESTED propergation behavior (6).
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited GlobalTransaction slingong.datastore.Slim3PlatformTransactionManager.beginGlogalTransaction(GlobalTransaction, Set, TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited DefaultTransactionStatus slingong.datastore.Slim3PlatformTransactionManager.newTransactionStatus(TransactionDefinition, Object, boolean, boolean, boolean, Object)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void slingong.datastore.Slim3PlatformTransactionManager.doBegin(Object, TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void slingong.datastore.Slim3PlatformTransactionManager.doBegin(Object, TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.prepareSynchronization(DefaultTransactionStatus, TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.prepareSynchronization(DefaultTransactionStatus, TransactionDefinition)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited TransactionStatus org.springframework.transaction.support.AbstractPlatformTransactionManager.handleExistingTransaction(TransactionDefinition, Object, boolean)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited TransactionStatus org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(TransactionDefinition)
+
+	
+Log records of nested commits
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(TransactionStatus)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing boolean org.springframework.transaction.support.AbstractPlatformTransactionManager.shouldCommitOnGlobalRollbackOnly()
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited boolean org.springframework.transaction.support.AbstractPlatformTransactionManager.shouldCommitOnGlobalRollbackOnly()
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.prepareForCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.prepareForCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerBeforeCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerBeforeCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerBeforeCompletion(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:40 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerBeforeCompletion(DefaultTransactionStatus)
+	
+	
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void slingong.datastore.Slim3PlatformTransactionManager.doCommit(DefaultTransactionStatus)
+	
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:40 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:48 PM com.google.apphosting.utils.config.AbstractConfigXmlReader readConfigXml
+	INFO: Successfully processed D:\EclipseProjects\SlingOnG\war\WEB-INF\queue.xml
+	Apr 13, 2011 8:39:48 PM com.google.appengine.api.taskqueue.dev.LocalTaskQueue init
+	INFO: LocalTaskQueue is initialized
+	Apr 13, 2011 8:39:48 PM com.google.appengine.api.taskqueue.dev.LocalTaskQueue init
+	INFO: Automatic task execution is disabled.
+	Apr 13, 2011 8:39:50 PM org.quartz.simpl.SimpleThreadPool initialize
+	INFO: Job execution threads will use class loader of thread: pool-1-thread-2
+	Apr 13, 2011 8:39:50 PM org.quartz.core.QuartzScheduler <init>
+	INFO: Quartz Scheduler v.UNKNOWN.UNKNOWN.UNKNOWN created.
+	Apr 13, 2011 8:39:50 PM org.quartz.simpl.RAMJobStore initialize
+	INFO: RAMJobStore initialized.
+	Apr 13, 2011 8:39:50 PM org.quartz.impl.StdSchedulerFactory instantiate
+	INFO: Quartz scheduler 'DefaultQuartzScheduler' initialized from default resource file in Quartz package: 'quartz.properties'
+	Apr 13, 2011 8:39:50 PM org.quartz.impl.StdSchedulerFactory instantiate
+	INFO: Quartz scheduler version: UNKNOWN.UNKNOWN.UNKNOWN
+	Apr 13, 2011 8:39:50 PM com.google.appengine.api.taskqueue.dev.LocalTaskQueue start_
+	INFO: Local task queue initialized with base url http://localhost:8080
+	Apr 13, 2011 8:39:51 PM slingong.datastore.Slim3PlatformTransactionManager doCommit
+	INFO: Slim3 GlobalTransaction (ID:6) committed.
+	
+	Apr 13, 2011 8:39:51 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void slingong.datastore.Slim3PlatformTransactionManager.doCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerAfterCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerAfterCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerAfterCompletion(DefaultTransactionStatus, int)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerAfterCompletion(DefaultTransactionStatus, int)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.cleanupAfterCompletion(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.doCleanupAfterCompletion(Object)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.doCleanupAfterCompletion(Object)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.cleanupAfterCompletion(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(TransactionStatus)
+	Apr 13, 2011 8:39:51 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void slingong.datastore.Slim3PlatformTransactionManagerTest.prepTransactionForPropergation(Method)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(TransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing boolean org.springframework.transaction.support.AbstractPlatformTransactionManager.shouldCommitOnGlobalRollbackOnly()
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited boolean org.springframework.transaction.support.AbstractPlatformTransactionManager.shouldCommitOnGlobalRollbackOnly()
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.prepareForCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.prepareForCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerBeforeCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerBeforeCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerBeforeCompletion(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerBeforeCompletion(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void slingong.datastore.Slim3PlatformTransactionManager.doCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:51 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited Set slingong.datastore.Slim3PlatformTransactionManager.getGlobalTransactionStates(GlobalTransaction)
+	Apr 13, 2011 8:39:51 PM slingong.datastore.Slim3PlatformTransactionManager doCommit
+	INFO: Slim3 GlobalTransaction (ID:0) committed.
+	Apr 13, 2011 8:39:51 PM slingong.datastore.Slim3PlatformTransactionManagerTestAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void slingong.datastore.Slim3PlatformTransactionManager.doCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerAfterCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerAfterCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerAfterCompletion(DefaultTransactionStatus, int)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.triggerAfterCompletion(DefaultTransactionStatus, int)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.cleanupAfterCompletion(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect beforeAbstractPlatformTransactionManagerMethodExecution
+	INFO: Executing void org.springframework.transaction.support.AbstractPlatformTransactionManager.doCleanupAfterCompletion(Object)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.doCleanupAfterCompletion(Object)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.cleanupAfterCompletion(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(DefaultTransactionStatus)
+	Apr 13, 2011 8:39:51 PM springframework.transaction.AbstractPlatformTransactionManagerAspect afterAbstractPlatformTransactionManagerMethodExecution
+	INFO: Exited void org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(TransactionStatus)
+
+	
+	

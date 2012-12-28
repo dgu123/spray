@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-dependencies" default="init-dependencies">
+<target name="init-dependencies">
+    <echo message="Loading dependency paths from file: D:\EclipseProjects\SlingOnG\war\WEB-INF\SpringDependencyRefs.xml"/>
+    <property name="org.springframework:spring-core:jar" value="D:\mvn_repo\org\springframework\spring-core\3.0.4.RELEASE\spring-core-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-core:jar" dir="D:\mvn_repo\org\springframework\spring-core\3.0.4.RELEASE">
+      <include name="spring-core-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-asm:jar" value="D:\mvn_repo\org\springframework\spring-asm\3.0.4.RELEASE\spring-asm-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-asm:jar" dir="D:\mvn_repo\org\springframework\spring-asm\3.0.4.RELEASE">
+      <include name="spring-asm-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="commons-logging:commons-logging:jar" value="D:\mvn_repo\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar"/>
+    <fileset id="commons-logging:commons-logging:jar" dir="D:\mvn_repo\commons-logging\commons-logging\1.1.1">
+      <include name="commons-logging-1.1.1.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-beans:jar" value="D:\mvn_repo\org\springframework\spring-beans\3.0.4.RELEASE\spring-beans-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-beans:jar" dir="D:\mvn_repo\org\springframework\spring-beans\3.0.4.RELEASE">
+      <include name="spring-beans-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-context:jar" value="D:\mvn_repo\org\springframework\spring-context\3.0.4.RELEASE\spring-context-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-context:jar" dir="D:\mvn_repo\org\springframework\spring-context\3.0.4.RELEASE">
+      <include name="spring-context-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-aop:jar" value="D:\mvn_repo\org\springframework\spring-aop\3.0.4.RELEASE\spring-aop-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-aop:jar" dir="D:\mvn_repo\org\springframework\spring-aop\3.0.4.RELEASE">
+      <include name="spring-aop-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="aopalliance:aopalliance:jar" value="D:\mvn_repo\aopalliance\aopalliance\1.0\aopalliance-1.0.jar"/>
+    <fileset id="aopalliance:aopalliance:jar" dir="D:\mvn_repo\aopalliance\aopalliance\1.0">
+      <include name="aopalliance-1.0.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-expression:jar" value="D:\mvn_repo\org\springframework\spring-expression\3.0.4.RELEASE\spring-expression-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-expression:jar" dir="D:\mvn_repo\org\springframework\spring-expression\3.0.4.RELEASE">
+      <include name="spring-expression-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-web:jar" value="D:\mvn_repo\org\springframework\spring-web\3.0.4.RELEASE\spring-web-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-web:jar" dir="D:\mvn_repo\org\springframework\spring-web\3.0.4.RELEASE">
+      <include name="spring-web-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-webmvc:jar" value="D:\mvn_repo\org\springframework\spring-webmvc\3.0.4.RELEASE\spring-webmvc-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-webmvc:jar" dir="D:\mvn_repo\org\springframework\spring-webmvc\3.0.4.RELEASE">
+      <include name="spring-webmvc-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-context-support:jar" value="D:\mvn_repo\org\springframework\spring-context-support\3.0.4.RELEASE\spring-context-support-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-context-support:jar" dir="D:\mvn_repo\org\springframework\spring-context-support\3.0.4.RELEASE">
+      <include name="spring-context-support-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-tx:jar" value="D:\mvn_repo\org\springframework\spring-tx\3.0.4.RELEASE\spring-tx-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-tx:jar" dir="D:\mvn_repo\org\springframework\spring-tx\3.0.4.RELEASE">
+      <include name="spring-tx-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="org.springframework:spring-test:jar" value="D:\mvn_repo\org\springframework\spring-test\3.0.4.RELEASE\spring-test-3.0.4.RELEASE.jar"/>
+    <fileset id="org.springframework:spring-test:jar" dir="D:\mvn_repo\org\springframework\spring-test\3.0.4.RELEASE">
+      <include name="spring-test-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <fileset id="spring.dependency.fileset" dir="D:\mvn_repo">
+      <include name="aopalliance\aopalliance\1.0\aopalliance-1.0.jar"/>
+      <include name="commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar"/>
+      <include name="org\springframework\spring-aop\3.0.4.RELEASE\spring-aop-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-asm\3.0.4.RELEASE\spring-asm-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-beans\3.0.4.RELEASE\spring-beans-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-context-support\3.0.4.RELEASE\spring-context-support-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-context\3.0.4.RELEASE\spring-context-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-core\3.0.4.RELEASE\spring-core-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-expression\3.0.4.RELEASE\spring-expression-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-test\3.0.4.RELEASE\spring-test-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-tx\3.0.4.RELEASE\spring-tx-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-web\3.0.4.RELEASE\spring-web-3.0.4.RELEASE.jar"/>
+      <include name="org\springframework\spring-webmvc\3.0.4.RELEASE\spring-webmvc-3.0.4.RELEASE.jar"/>
+    </fileset>
+    <property name="dependency.versions" value="3.0.4.RELEASE;1.1.1;1.0"/>
+  </target>
+</project>
