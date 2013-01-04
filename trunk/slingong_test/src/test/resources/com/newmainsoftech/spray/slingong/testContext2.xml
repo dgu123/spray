@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Auto-generated applicationContext.xml by PrepGaejSpringSupport.Ant.xml -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+    xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+	
+	<!-- For Spring -->
+	
+	<!-- To know what annotation-config does, 
+		refer to http://swik.net/Spring/Interface21+Team+Blog/Spring+2.5%27s+Comprehensive+Annotation+Support/b1z6v
+	 -->								
+	<context:annotation-config />
+	<context:component-scan base-package="com.newmainsoftech.spray.slingong..*" /> 
+	
+	<!-- AnnotationBeanConfigurerAspect is aspect to find @Configurable annotation.
+	org.springframework.transaction.aspectj.AnnotationBeanConfigurerAspect is in spring-aspects.jar. 
+	Hence it needs factory-method="aspectOf" option beside putting spring-aspects.jar to Aspect Path. 
+	Using within option of include element in aop.xml makes more sense for 
+	org.springframework.transaction.aspectj.AnnotationBeanConfigurerAspect, rather than having bean defined 
+	here with factory-method="aspectOf" option. However it makes configuration view more unclear. 
+	Therefore, defining the bean here.
+	 -->
+	<bean id="annotationBeanConfigurerAspect" 
+		class="org.springframework.beans.factory.aspectj.AnnotationBeanConfigurerAspect" 
+		factory-method="aspectOf" />
+	
+	<!-- Use regular Slim3PlatformTransactionManager rather than mocked one 
+ 	-->
+	<bean id="txManager"
+		class="com.newmainsoftech.spray.slingong.datastore.Slim3PlatformTransactionManager">
+	</bean>
+ 
+	<!-- org.springframework.transaction.aspectj.AnnotationTransactionAspect is in spring-aspects.jar. 
+	Hence it needs factory-method="aspectOf" option beside putting spring-aspects.jar to Aspect Path. 
+	Using within option of include element in aop.xml makes more sense for 
+	org.springframework.transaction.aspectj.AnnotationTransactionAspect, rather than having bean defined 
+	here with factory-method="aspectOf" option. However it makes configuration view more unclear. 
+	Therefore, defining the bean here.
+	 -->	 
+	<bean id="annotationTransactionAspect" 
+		class="org.springframework.transaction.aspectj.AnnotationTransactionAspect" 
+		factory-method="aspectOf">
+		<property name="transactionManager" ref="txManager" />
+	</bean>
+	<!-- AnnotationTransactionOnStaticMethodAspect supports @Transactional annotation at static method.
+ 	-->
+	<bean id="annotationTransactionOnStaticMethodAspect" 
+		class="com.newmainsoftech.spray.slingong.datastore.AnnotationTransactionOnStaticMethodAspect" 
+		factory-method="aspectOf">
+		<property name="transactionManager" ref="txManager" />
+	</bean>
+		
+	<!-- Dummy bean in order to just force early instantiations of AnnotationBeanConfigurerAspect bean and 
+	AnnotationTransactionAspect bean than any other beans (transaction manager)
+	Without this, Spring transaction doesn't work via AspectJ. 
+	-->
+	<bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator" 
+		depends-on="annotationBeanConfigurerAspect,annotationTransactionAspect,annotationTransactionOnStaticMethodAspect">
+		<property name="includePatterns">
+			<list><value>nothing</value></list>
+		</property>
+	</bean>
+	
+	<!-- End for Spring MVC -->
+</beans>
+								
