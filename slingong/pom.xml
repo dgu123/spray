@@ -10,22 +10,19 @@
 	</parent>
 
 	<!-- Project definitions -->
-	<name>slingong</name>
-	<groupId>com.newmainsoftech.spray</groupId>
-	<artifactId>slingong</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+		<name>SlingOnG</name>
+		<description>Utilities for platform of Slim3 + Spring on GAE/J</description>
+		<groupId>com.newmainsoftech.spray</groupId>
+		<artifactId>slingong</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+		<packaging>jar</packaging>
 
-	<!-- Specify hard-coded project properties here -->
-	<properties>
-		<!-- To specify version of app being uploaded. 
-			Upload to http://<version>.latest.<applicationName>.appspot.com -->
-			<gae_application_version>test</gae_application_version>
-				<!-- For maven-gae-plugin -->
-			<appengine_app_version>${gae_application_version}</appengine_app_version>
-				<!-- For appengine-maven-plugin -->
-	</properties>
-     
+	<scm>
+		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/slingong</connection>
+		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/slingong</developerConnection>
+		<url>https://code.google.com/p/spray/source/checkout</url>
+	</scm>
+	
     <repositories>
     	<repository>
     		<name>Seasar Foundation repo</name>
@@ -111,7 +108,10 @@
 
 	<build>
 		<plugins>
-			<!-- Java compiler version -->
+	  		<plugin>
+	  			<groupId>org.codehaus.mojo</groupId>
+	  			<artifactId>license-maven-plugin</artifactId>
+	  		</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -158,43 +158,10 @@
 	  			 	<verbose>true</verbose>
 	  			</configuration>
 	  		</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1-beta-1</version>
-				<configuration>
-					<webResources>
-                        <!-- in order to interpolate version from pom into appengine-web.xml -->
-						<resource>
-							<directory>src/main/webapp</directory>
-							<filtering>true</filtering>
-							<includes>
-								<include>**/appengine-web.xml</include>
-							</includes>
-						</resource>
-					</webResources>
-				</configuration>
+	  		<plugin>
+	  			<groupId>com.google.code.maven-license-plugin</groupId>
+	  			<artifactId>maven-license-plugin</artifactId>
 			</plugin>
-
-			<!-- plugin>
-				<groupId>net.kindleit</groupId>
-				<artifactId>maven-gae-plugin</artifactId>
-				<version>0.9.5</version>
-			</plugin -->
-				<!-- Type "mvn gae:run" to run project, "mvn gae:deploy" to upload to GAE. -->
-			<!-- plugin>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<goals>gae:deploy</goals>
-				</configuration>
-			</plugin -->
-				<!-- For uploading app to appspot server automatically with maven-gae-plugin, 
-					during release:perform -->
-            <plugin>
-                <groupId>com.google.appengine</groupId>
-                <artifactId>appengine-maven-plugin</artifactId>
-                <version>${appengine-maven-plugin_version}</version>
-            </plugin>
 		</plugins>
 	</build>
 </project>
