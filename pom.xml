@@ -80,7 +80,7 @@
 	
 	<properties>
 		<!-- For depedency version -->
-			<spring_version>3.2.0.RELEASE</spring_version>
+			<spring_version>3.1.3.RELEASE</spring_version>
 		
 			<!-- Specify AppEngine version for your project. It should match SDK version 
 				pointed to by ${gae.home} property (Typically, one used by your Eclipse plug-in) -->
