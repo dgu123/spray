@@ -84,14 +84,13 @@ avoids duplicate rollback execution by gracefully discarding it.
 		refer to <a href="https://gaeworkout.appspot.com/">gaeworkout.appspot.com</a>.) And how to 
 		correctly configure Spring to use AspectJ for instantiating bean with injecting dependency too 
 		requires the solid knowledge of Spring and AspectJ. Because of that, many folks believed that 
-		Spring Transaction had not worked on GAE/J (without hack). <br />
-		The below in this page is the brief (not-in-depth) instructions for configuring 
-		Slim3PlatformTransactionManger. The instructions works upto Spring ver 3.1.x but ver 3.2 (or 
-		later). (Please be advised that, for your own custom aspect (other than SlingOnG), you may 
-		encounter problem even you configure the same kind way to define bean for your custom aspect due 
-		to something like what in your classpath, AspectJ's aspectpath, whether your aspect needs to have 
-		dependency injected, other factors like configuration for Spring's annotation support for related 
-		beans, and of course Spring version.)
+		Spring Transaction had not worked on GAE/J (without hack). (In this page, the only how-to for 
+		configuring Slim3PlatformTransactionManger is provided (briefly, not in depth), and please be 
+		advised that, for your own custom aspect (other than SlingOnG), you may encounter problem even 
+		you configure the same kind way to define bean for your custom aspect due to something like what 
+		in your classpath, AspectJ's aspectpath, whether your aspect needs to have dependency injected, 
+		other factors like configuration for Spring's annotation support for related beans, and of 
+		course Spring version.)
 	</li>
 	<li>Add dependency libraries to your AppEngine web app project<br />
 		Add the library binaries of Slim3, SlingOnG, and Spring as well as AppEngine SDK ones. For list of dependency 
@@ -154,8 +153,16 @@ avoids duplicate rollback execution by gracefully discarding it.
 					<li>Refer to the <a href="http://blog.springsource.org/2009/12/02/obtaining-spring-3-artifacts-with-maven/"
 						>"Obtaining Spring 3 Artifacts with Maven"</a> springsource blog post by Mr. Keith Donald.
 					</li>
-					<li>For manual download, you may use <a href="http://ebr.springsource.com/repository/app/"
-						>http://ebr.springsource.com/repository/app/</a> site.
+					<li>For manual download, you may use the following sites. (For the difference, 
+						please follow the link of the above blog post.):
+						<ul>
+							<li><a href="https://repository.apache.org/index.html#welcome"
+								>Maven central repo site</a>
+							</li>
+							<li><a href="http://ebr.springsource.com/repository/app/"
+								>springsource EBR repo site</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</li>
