@@ -280,7 +280,7 @@ avoids duplicate rollback execution by gracefully discarding it.
 
 <p></div><div class="section"><h4>Configuration guide<a name="Configuration_guide"></a></h4>
 </p><ol style="list-style-type: decimal">
-	<li>First Of all, the issue about Spring's proxing on GAE/J.<br />
+	<li>First Of all, the <b>issue about Spring's proxing on GAE/J</b>.<br />
 		In order to use Spring's transaction support on GAE/J, Spring Transaction must be configured via 
 		rather AspectJ than Spring AOP because, in simple words, Spring Transaction is basically built 
 		upon around-advise AOP and Spring proxy does not work on GAE/J (For more info about it, please 
@@ -295,7 +295,7 @@ avoids duplicate rollback execution by gracefully discarding it.
 		other factors like configuration for Spring's annotation support for related beans, and of 
 		course Spring version.)
 	</li>
-	<li>Add dependency libraries to your AppEngine web app project<br />
+	<li><b>Add dependency libraries</b> to your AppEngine web app project<br />
 		Add the library binaries of Slim3, SlingOnG, and Spring as well as AppEngine SDK ones. For list of dependency 
 		library, see <a href="dependencies.html">Dependencies page</a>.
 		<ul>
@@ -365,7 +365,19 @@ avoids duplicate rollback execution by gracefully discarding it.
 			</li>
 		</ul>
 	</li>
-	<li>Configure Slim3's Datastore by following the <a class="externalLink" href="https://sites.google.com/site/slim3appengine/slim3-datastore/installation">Slim3 Datastore installation instructions</a> in the Slim3's web site.
+	<li><b>Configuration for Slim3's Datastore library</b><br />
+		<ul>
+			<li>Follows the <a class="externalLink" href="https://sites.google.com/site/slim3appengine/slim3-datastore/installation">Slim3 Datastore installation instructions</a> in the Slim3's web site.
+			</li>
+			<li>If the project of your AppEngine's web app is a Maven project, then 
+				org.codehaus.mojo:build-helper-maven-plugin and org.codehaus.mojo:apt-maven-plugin plugins 
+				(and org.slim3:slim3-gen artifact dependency of course) must be configured for annotation 
+				processing for Slim3 Datastore.<br />
+				You may refer to <a class="externalLink" href="https://code.google.com/p/spray/source/browse/trunk/slingong_test/pom.xml">pom.xml of SlingOnG_test module</a> as an example though the execution phases of those 
+				plugins have been set to the test phase because SlingOnG_test module is the module just 
+				for testing SlingOnG. 
+			</li>
+		</ul>
 	</li>
 	<li><b>Add spring-aspects.jar and slingong.jar to AspectJ's aspectpath</b>.
 	</li>
