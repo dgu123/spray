@@ -76,27 +76,72 @@ avoids duplicate rollback execution by gracefully discarding it.
 		course Spring version.)
 	</li>
 	<li>Add dependency libraries to your AppEngine web app project<br />
-		Add the library binaries of Spring and Slim3 as well as AppEngine SDK ones. For list of dependency 
-		library, see <a href="dependencies.html">Dependencies page</a>.<br />
-		When you use auto-fashion build framework like Maven and others, see <a href="dependency-info.html"
-		>Dependency Information page</a>. <br />
-		The Maven remote repository for Slim3 artifacts is:
-		<blockquote>
-			<code>
-				&lt;repository&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;Seasar Foundation repo&lt;/name&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&lt;id&gt;maven.seasar.org&lt;/id&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://www.seasar.org/maven/maven2&lt;/url&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&lt;snapshots&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;enabled&gt;true&lt;/enabled&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&lt;/snapshots&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&lt;releases&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				&lt;updatePolicy&gt;never&lt;/updatePolicy&gt;<br />
-				&nbsp;&nbsp;&nbsp;&nbsp;&lt;/releases&gt;<br />
-				&lt;/repository&gt;<br />
-			</code>
-		</blockquote>
+		Add the library binaries of Slim3, SlingOnG, and Spring as well as AppEngine SDK ones. For list of dependency 
+		library, see <a href="dependencies.html">Dependencies page</a>.
+		<ul>
+			<li>To download SlingOnG
+				<ul>
+					<li>When you use auto-fashion build framework like Maven and others, see <a href="dependency-info.html"
+						>Dependency Information page</a>.<br />
+						For released version, the artifact will be able to be downloaded from Maven central 
+						repository.<br />
+						For snapshot build, use Sonatype's Nexus snapshots repo:
+						<blockquote>
+							<code>
+								&lt;id&gt;sonatype-nexus-snapshots&lt;/id&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								&lt;name&gt;Sonatype Nexus Snapshots&lt;/name&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								&lt;url&gt;https://oss.sonatype.org/content/repositories/snapshots&lt;/url&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								&lt;releases&gt;&lt;enabled&gt;false&lt;/enabled&gt;&lt;/releases&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								&lt;snapshots&gt;&lt;enabled&gt;true&lt;/enabled&gt;&lt;/snapshots&gt;<br />
+								&lt;/repository&gt;
+							</code>
+						</blockquote>
+					</li>
+					<li>For manual download, the SlingOnG artifact can be downloaded from <a href="https://oss.sonatype.org/content/groups/public/com/newmainsoftech/"
+						>Sonatype's Nexus public repo</a>
+					</li>
+				</ul>
+			</li>
+			<li>To download Slim3
+				<ul>
+					<li>For Maven, Slim3 artifacts can be downloaded from the Seasar Foundation repo.
+						<blockquote>
+							<code>
+								&lt;repository&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;Seasar Foundation repo&lt;/name&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&lt;id&gt;maven.seasar.org&lt;/id&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://www.seasar.org/maven/maven2&lt;/url&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&lt;snapshots&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;enabled&gt;true&lt;/enabled&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&lt;/snapshots&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&lt;releases&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&lt;updatePolicy&gt;never&lt;/updatePolicy&gt;<br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&lt;/releases&gt;<br />
+								&lt;/repository&gt;<br />
+							</code>
+						</blockquote>
+					</li>
+					<li>For manual download, the Slim3 artifact can be downloaded from <a href="https://code.google.com/p/slim3/downloads/list"
+						>Slim3 Google code site</a>.
+					</li>
+				</ul>
+			</li>
+			<li>To download Spring components
+				<ul>
+					<li>Refer to the <a href="http://blog.springsource.org/2009/12/02/obtaining-spring-3-artifacts-with-maven/"
+						>"Obtaining Spring 3 Artifacts with Maven"</a> springsource blog post by Mr. Keith Donald.
+					</li>
+				</ul>
+			</li>
+			<li>For manual download, you may use <a href="http://ebr.springsource.com/repository/app/"
+				>http://ebr.springsource.com/repository/app/</a> site.
+			</li>
+		</ul>
 	</li>
 	<li>Configure Slim3's Datastore by following the <a href="https://sites.google.com/site/slim3appengine/slim3-datastore/installation"
 	>Slim3 Datastore installation instructions</a> in the Slim3's web site.
@@ -113,7 +158,7 @@ avoids duplicate rollback execution by gracefully discarding it.
 				Replace the <i>package_of_your_component</i> part with actual package name of your 
 				component.<br />
 				(You may take a look at <a href="http://swik.net/Spring/Interface21+Team+Blog/Spring+2.5%27s+Comprehensive+Annotation+Support/b1z6v"
-				>Spring 2.5's Comprehensive Annotation Support</a> SWiK blog post by Juergen Hoeller if you 
+				>Spring 2.5's Comprehensive Annotation Support</a> SWiK blog post by Mr. Juergen Hoeller if you 
 				need more information on the <code>context</code> tag, although it was written at Spring 
 				ver 2.5 time.)
 			</li>
