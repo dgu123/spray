@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="aspectjutil"  
+<project name="Spray"  
     xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd" 
     xmlns="http://maven.apache.org/DECORATION/1.3.0" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -23,7 +23,7 @@
       <item name="Spray" href="./" />
     </links>
 	<menu name="Modules">
-		<item name="SlingOnG" href="SlingOnG/index.html" />
+		<item name="SlingOnG" href="slingong/index.html" />
 	</menu>
     <menu ref="parent" />
     <menu ref="reports" />
