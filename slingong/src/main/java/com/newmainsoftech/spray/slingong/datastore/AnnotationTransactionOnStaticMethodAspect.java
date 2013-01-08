@@ -83,8 +83,8 @@ public class AnnotationTransactionOnStaticMethodAspect extends TransactionAspect
 	
 	// aspect implementation for static Transactional method --------------------------------------
 	/**
-	 * AspectJ's {@link Pointcut} for execution of either static method annotated with 
-	 * @{@link Transactional} annotation or public static method in class annotated with 
+	 * AspectJ's {@link Pointcut} for execution of either static method annotated 
+	 * with @{@link Transactional} annotation or public static method in class annotated with 
 	 * <code>@Transactional</code> annotation.
 	 */
 	@Pointcut( 

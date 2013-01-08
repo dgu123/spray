@@ -93,11 +93,27 @@ import com.google.apphosting.api.DeadlineExceededException;
 	  void rollback( TransactionStatus status) throws TransactionException;
 	}	
  * 
-	The TransactionDefinition interface specifies (Understanding these concepts is essential to using the Spring Framework or any transaction management solution):
-		  - Isolation: The degree to which this transaction is isolated from the work of other transactions. For example, can this transaction see uncommitted writes from other transactions?
-		  - Propagation: Typically, all code executed within a transaction scope will run in that transaction. However, you have the option of specifying the behavior in the event that a transactional method is executed when a transaction context already exists. For example, code can continue running in the existing transaction (the common case); or the existing transaction can be suspended and a new transaction created. Spring offers all of the transaction propagation options familiar from EJB CMT. To read about the semantics of transaction propagation in Spring, see Section 10.5.7, â€œTransaction propagationâ€?.
-		  - Timeout: How long this transaction runs before timing out and being rolled back automatically by the underlying transaction infrastructure.
-		  - Read-only status: A read-only transaction can be used when your code reads but does not modify data. Read-only transactions can be a useful optimization in some cases, such as when you are using Hibernate. 
+	The TransactionDefinition interface specifies (Understanding these concepts is essential to using 
+	the Spring Framework or any transaction management solution):
+		- Isolation: 
+			The degree to which this transaction is isolated from the work of other transactions. 
+			For example, can this transaction see uncommitted writes from other transactions?
+		- Propagation: 
+			Typically, all code executed within a transaction scope will run in that transaction. 
+			However, you have the option of specifying the behavior in the event that a transactional 
+			method is executed when a transaction context already exists. 
+			For example, code can continue running in the existing transaction (the common case); or 
+			the existing transaction can be suspended and a new transaction created. 
+			Spring offers all of the transaction propagation options familiar from EJB CMT. 
+			To read about the semantics of transaction propagation in Spring, see 
+			Section 10.5.7, "Transaction propagation".
+		- Timeout: 
+			How long this transaction runs before timing out and being rolled back automatically by 
+			the underlying transaction infrastructure.
+		- Read-only status: 
+			A read-only transaction can be used when your code reads but does not modify data. 
+			Read-only transactions can be a useful optimization in some cases, such as when you are 
+			using Hibernate. 
  * 
 	public interface TransactionStatus extends SavepointManager {
 		boolean isNewTransaction();

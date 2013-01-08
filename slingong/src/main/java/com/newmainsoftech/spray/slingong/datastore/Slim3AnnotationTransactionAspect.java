@@ -113,7 +113,7 @@ public class Slim3AnnotationTransactionAspect {
 	 * <ul>
 	 * <li>{@link GlobalTransaction#commit()}</li>
 	 * <li>overloaded delete methods</li>
-	 * <li>{@link GlobalTransaction#put()}</li>
+	 * <li>overloaded put methods</li>
 	 * <li>{@link GlobalTransaction#rollback()}</li>
 	 * </ul>
 	 */
@@ -138,8 +138,8 @@ public class Slim3AnnotationTransactionAspect {
 	protected static void pointcutAtExecutionOfPublicMethodOfTransactionalType() {}
 	
 	/**
-	 * AspectJ's pointcut to check whether executing public method in class of what 
-	 * @{@link Transactional} annotation is specified as read-only. 
+	 * AspectJ's pointcut to check whether executing public method in class of 
+	 * what @{@link Transactional} annotation is specified as read-only. 
 	 * 
 	 * @param atTx 
 	 * @return readOnly attribute value of @{@link Transactional} annotation
@@ -168,8 +168,8 @@ public class Slim3AnnotationTransactionAspect {
 	
 	/**
 	 * AspectJ's {@link Before} advise method to handle incident of call to not-read-only method 
-	 * of {@link GlobalTransaction} class during execution of public method in class of what 
-	 * @{@link Transactional} annotation is specified as read-only. <br />
+	 * of {@link GlobalTransaction} class during execution of public method in class of 
+	 * what @{@link Transactional} annotation is specified as read-only. <br />
 	 * Uses {@link #pointcutForInproperPersistenceInTransactionalReadOnlyType(Transactional)} pointcut to 
 	 * pick up join-point. <br />
 	 * This let {@link #handleInproperPersistenceIncident(boolean, JoinPoint, org.aspectj.lang.JoinPoint.EnclosingStaticPart)} 
@@ -197,7 +197,7 @@ public class Slim3AnnotationTransactionAspect {
 	 * {@link #pointcutAtExecutionOfPublicMethodOfTransactionalReadOnlyType(Transactional)} pointcut. 
 	 * 
 	 * @param atTx
-	 * @return
+	 * @return true when atTx input is for read-only transaction.
 	 */
 	@Pointcut( 
 			"!pointcutAtExecutionOfPublicMethodOfTransactionalType() && " +
@@ -228,8 +228,8 @@ public class Slim3AnnotationTransactionAspect {
 	
 	/**
 	 * AspectJ's {@link Before} advise method to handle incident of call to not-read-only method 
-	 * of {@link GlobalTransaction} class during execution of method annotated with 
-	 * @{@link Transactional} annotation what has read-only attribute specified. <br />
+	 * of {@link GlobalTransaction} class during execution of method annotated 
+	 * with @{@link Transactional} annotation what has read-only attribute specified. <br />
 	 * Uses {@link #pointcutForInproperPersistenceInReadOnlyTransactionalMethod(Transactional)} pointcut to 
 	 * pick up join-point. <br />
 	 * This let {@link #handleInproperPersistenceIncident(boolean, JoinPoint, org.aspectj.lang.JoinPoint.EnclosingStaticPart)} 
@@ -238,7 +238,6 @@ public class Slim3AnnotationTransactionAspect {
 	 * @param joinPoint
 	 * @param enclosingStaticPart
 	 * @param atTx
-	 * @param obj
 	 */
 	@Before( value="pointcutForInproperPersistenceInReadOnlyTransactionalMethod( atTx)")
 	public void beforeInproperPersistenceInReadOnlyTransactionalMethod( 
