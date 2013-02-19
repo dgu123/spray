@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>spray</artifactId>
+		<groupId>com.newmainsoftech</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<!-- Project definitions -->
+		<name>SlingOnG</name>
+		<description>Utilities for platform of Slim3 + Spring on GAE/J</description>
+		<groupId>com.newmainsoftech.spray</groupId>
+		<artifactId>slingong</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+		<packaging>jar</packaging>
+
+	<scm>
+		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/slingong</connection>
+		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/slingong</developerConnection>
+		<url>https://code.google.com/p/spray/source/checkout</url>
+	</scm>
+	
+    <repositories>
+    	<repository>
+    		<name>Seasar Foundation repo</name>
+    		<id>maven.seasar.org</id>
+    		<url>https://www.seasar.org/maven/maven2</url>
+    		<snapshots>
+    			<enabled>true</enabled>
+    		</snapshots>
+    		<releases>
+    			<updatePolicy>never</updatePolicy>
+    		</releases>
+    	</repository>
+    </repositories>
+     
+	<dependencies>
+		<!-- Compile scope -->
+		    <dependency>
+		    	<groupId>org.aspectj</groupId>
+		    	<artifactId>aspectjrt</artifactId>
+		    	<version>${aspectj_version}</version>
+		    </dependency>
+		
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-tx</artifactId>
+				<version>${spring_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aspects</artifactId>
+				<version>${spring_version}</version>
+			</dependency>
+		
+	        <dependency>
+	        	<groupId>com.google.appengine</groupId>
+	        	<artifactId>appengine-api-1.0-sdk</artifactId>
+	        	<version>${gae_version}</version>
+	        </dependency>
+	        <dependency>
+	        	<groupId>org.slim3</groupId>
+	        	<artifactId>slim3</artifactId>
+	        	<version>${slim3_version}</version>
+	        	<exclusions>
+	        		<exclusion>
+			        	<groupId>com.google.appengine</groupId>
+			        	<artifactId>appengine-api-1.0-sdk</artifactId>
+	        		</exclusion>
+	        		<exclusion>
+						<groupId>com.google.appengine</groupId>
+						<artifactId>appengine-api-labs</artifactId>
+	        		</exclusion>
+	        	</exclusions>
+	        </dependency>
+
+		<!-- Provided scope -->
+			<dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>persistence-api</artifactId>
+				<version>1.0.2</version>
+	        	<scope>provided</scope>
+			</dependency>
+				<!-- spring-aspect depends javax.persistence:persistence-api.
+					see https://jira.springsource.org/browse/SPR-6819 
+				-->
+	        <dependency>
+	        	<groupId>org.slim3</groupId>
+	        	<artifactId>slim3-gen</artifactId>
+	        	<version>${slim3_version}</version>
+	        	<scope>provided</scope>
+	        	<exclusions>
+	        		<exclusion>
+	        			<groupId>org.apache.ant</groupId>
+	        			<artifactId>ant</artifactId>
+	        		</exclusion>
+	        	</exclusions>
+	        </dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+	  		<plugin>
+	  			<groupId>org.codehaus.mojo</groupId>
+	  			<artifactId>license-maven-plugin</artifactId>
+	  		</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+	  		<plugin>
+	  			<groupId>org.codehaus.mojo</groupId>
+	  			<artifactId>aspectj-maven-plugin</artifactId>
+	  			<version>1.4</version>
+	  			<dependencies>
+				    <dependency>
+				    	<groupId>org.aspectj</groupId>
+				    	<artifactId>aspectjtools</artifactId>
+				    	<version>${aspectj_version}</version>
+				    </dependency>
+				    <dependency>
+				    	<groupId>org.aspectj</groupId>
+				    	<artifactId>aspectjrt</artifactId>
+				    	<version>${aspectj_version}</version>
+				    </dependency>
+			        <dependency>
+			        	<groupId>org.apache.geronimo.specs</groupId>
+			        	<artifactId>geronimo-jpa_3.0_spec</artifactId>
+			        	<version>1.1.1</version>
+			        </dependency>
+	  			</dependencies>
+	  			<executions>
+	  			    <execution>
+	  			    	<id>compile</id>
+	  			        <goals><goal>compile</goal></goals>
+	  			        <!-- configuration>
+			  			    <aspectLibraries>
+			  			    	<aspectLibrary>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-aspects</artifactId>
+			  			    	</aspectLibrary>
+			  			    </aspectLibraries>
+	  			        </configuration -->
+	  			    </execution>
+	  			</executions>
+	  			<configuration>
+	  			    <source>${maven_compiler_source}</source>
+	  			    <target>${maven_compiler_target}</target>
+	  			 	<showWeaveInfo>false</showWeaveInfo>
+	  			 	<verbose>true</verbose>
+	  			</configuration>
+	  		</plugin>
+	  		<plugin>
+	  			<groupId>com.google.code.maven-license-plugin</groupId>
+	  			<artifactId>maven-license-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>
