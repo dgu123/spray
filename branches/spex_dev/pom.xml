@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<prerequisites>
 		<maven>3.0</maven>
@@ -131,7 +129,7 @@
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>0.9.24</version>
+				<version>1.0.9</version>
 			</dependency>
 				<!-- version of artifacts from org.slf4j needs to be matched with 
 					slf4j-api version what logback-classic depends on. -->
@@ -175,6 +173,7 @@
   <modules>
     <module>slingong</module>
     <module>slingong_test</module>
+    <module>sprex</module>
   </modules>
   
   <build>
@@ -388,7 +387,7 @@
 								<description>
 								     <![CDATA[ Define various Maven properties with dynamic values ]]>
 								</description>
-								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath" />
+								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath"/>
 								<script language="beanshell">
 								     <![CDATA[
 								    import org.apache.maven.project.MavenProject;
@@ -459,18 +458,18 @@
 									-->console for convenience of development and debugging in <!-- 
 									-->process-test-classes phase (before test phase).
 	  							</description>
-								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath" />
+								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath"/>
 								<if>
-									<equals arg1="${open-bsh}" arg2="true" />
+									<equals arg1="${open-bsh}" arg2="true"/>
 									<then>
-			  							<property name="plugin_classpath" refid="maven.plugin.classpath" />
-			  							<property name="test_classpath" refid="maven.test.classpath" />
+			  							<property name="plugin_classpath" refid="maven.plugin.classpath"/>
+			  							<property name="test_classpath" refid="maven.test.classpath"/>
 			  							<java classname="bsh.Console" dir="${project.build.directory}" fork="true" spawn="true">
 			  								<classpath>
-			  									<pathelement path="${java.class.path}" />
+			  									<pathelement path="${java.class.path}"/>
 			  									<!-- pathelement location="${org.beanshell:bsh:jar}" / -->
-			  									<pathelement path="${plugin_classpath}" />
-			  									<pathelement path="${test_classpath}" />
+			  									<pathelement path="${plugin_classpath}"/>
+			  									<pathelement path="${test_classpath}"/>
 			  								</classpath>
 			  							</java>
 									</then>
