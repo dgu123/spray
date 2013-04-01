@@ -7,7 +7,7 @@
 		</encoder>
 	</appender>
 	
-	<logger name="com.newmainsoftech.spray.spex" level="DEBUG" />
+	<logger name="com.newmainsoftech.spray.sprex" level="DEBUG" />
 	<logger name="org.springframework.test" level="DEBUG" />
 	<logger name="org.springframework.context.support" level="DEBUG" />
 	<logger name="org.springframework.web.servlet.config" level="DEBUG" />
