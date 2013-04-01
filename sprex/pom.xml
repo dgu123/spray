@@ -62,13 +62,13 @@
 	<build>
     	<testResources>
     		<testResource>
-    			<directory>src${file.separator}test${file.separator}resources</directory>
+    			<directory>${project.build.testSourceDirectory}${file.separator}..${file.separator}resources</directory>
     			<includes>
     				<include>**${file.separator}*</include>
     			</includes>
     		</testResource>
     		<testResource>
-    			<directory>src${file.separator}test${file.separator}webapp</directory>
+    			<directory>${project.build.testSourceDirectory}${file.separator}..${file.separator}webapp</directory>
     			<includes>
     				<include>**${file.separator}*</include>
     			</includes>
