@@ -274,11 +274,21 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 	
 	@Test
 	public void test_setUltimateLocale() {
+		LanguagePolicyLocaleFallbackHandler languagePolicyLocaleFallbackHandler 
+		= new LanguagePolicyLocaleFallbackHandler( Locale.getDefault());
+			Assert.assertEquals( 
+					Locale.getDefault(), languagePolicyLocaleFallbackHandler.getUltimateLocale());
+		Locale testLocale = null;
+			languagePolicyLocaleFallbackHandler.setUltimateLocale( testLocale);
+			Assert.assertEquals( 
+					testLocale, 
+					languagePolicyLocaleFallbackHandler.getUltimateLocale());
+		
 		Map<String, List<Locale>> localesMap = getLanguageWithMultiLocales();
 			Iterator<List<Locale>> localeIterator = localesMap.values().iterator();
 			List<Locale> localeList = localeIterator.next();
-			Locale testLocale = localeList.get( 0);
-				LanguagePolicyLocaleFallbackHandler languagePolicyLocaleFallbackHandler 
+			testLocale = localeList.get( 0);
+				languagePolicyLocaleFallbackHandler 
 				= new LanguagePolicyLocaleFallbackHandler( testLocale);
 				Assert.assertEquals( 
 						testLocale, 
@@ -299,6 +309,7 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 				Assert.assertEquals( 
 						testLocale, 
 						languagePolicyLocaleFallbackHandler.getUltimateLocale());
+				
 		localesMap = getCountryWithMultiLocales();
 			testLocale = localesMap.values().iterator().next().get( 0);
 				languagePolicyLocaleFallbackHandler 
@@ -323,6 +334,7 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 				Assert.assertEquals( 
 						testLocale, 
 						languagePolicyLocaleFallbackHandler.getUltimateLocale());
+				
 		localesMap = getScriptWithMultiLocales();
 			testLocale = localesMap.values().iterator().next().get( 0);
 				languagePolicyLocaleFallbackHandler 
@@ -347,6 +359,7 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 				Assert.assertEquals( 
 						testLocale, 
 						languagePolicyLocaleFallbackHandler.getUltimateLocale());
+				
 		localesMap = getVariantLocales();
 			testLocale = localesMap.values().iterator().next().get( 0);
 				languagePolicyLocaleFallbackHandler 
@@ -373,13 +386,32 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 						languagePolicyLocaleFallbackHandler.getUltimateLocale());
 	}
 	
-	
-	
 	@Test
 	public void test_isUltimateLocale() {
 		List<Locale> availableLocalesList = new ArrayList<Locale>();
 			availableLocalesList.addAll( Arrays.asList( Locale.getAvailableLocales()));
-		
+
+		{
+			LanguagePolicyLocaleFallbackHandler languagePolicyLocaleComparator 
+			= new LanguagePolicyLocaleFallbackHandler( null);
+			Assert.assertTrue( 
+					String.format(
+							"%1$s.isUltimateLocale method could not identified null " 
+							+ "as ultimate fall-back locale.",
+							languagePolicyLocaleComparator.getClass().getSimpleName()),
+					languagePolicyLocaleComparator.isUltimateLocale( null));
+			Assert.assertNotEquals( 
+					"Test data error: unexpected Locale.getDefault() method to return null.",
+					null, Locale.getDefault());
+			Assert.assertFalse( 
+					String.format(
+							"%1$s.isUltimateLocale method misidentified %2$s as " 
+							+ "ultimate fall-back locale instead of null.",
+							languagePolicyLocaleComparator.getClass().getSimpleName(), 
+							Locale.getDefault()),
+					languagePolicyLocaleComparator.isUltimateLocale( Locale.getDefault()));
+		}
+			
 		// Test for language-only locale with fall-back locale list with 
 		// other locales with same language, country, script and/or variant	
 		{
@@ -622,7 +654,7 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 	 */
 	@Test
 	public void test_getNextFallbackLocale_for_no_same_language_locale_in_locale_list_case() {
-		Locale ultimateFallbackLocale = null;
+		Locale ultimateFallbackLocale = Locale.getDefault();
 		LanguagePolicyLocaleFallbackHandler languagePolicyLocaleFallbackHandler 
 		= new LanguagePolicyLocaleFallbackHandler( ultimateFallbackLocale);
 		
@@ -634,22 +666,10 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 							+ "among system provided locales: %1$s.",
 							treeMap.values().toString()),
 					(keyArray.length > 1));
-		String lastLanguage = "";
 		int testLanguageCount = 0;
 		for( int index = 0; index < (keyArray.length - 1); index++) {
 			String key = keyArray[ index];
 			String language = key.substring( 0, key.indexOf( ","));
-				Assert.assertNotEquals(
-						String.format(
-								"Test data error: failed to pick up 2 different languages out of " 
-								+ "available system provided locales; one for construct locale list and " 
-								+ "other language locale being fed to getNextFallbackLocale method of " 
-								+ "%1$s. It occured with %2$s key (at %3$d data out of %4$s).",
-								languagePolicyLocaleFallbackHandler.getClass().getSimpleName(),
-								key, 
-								index, 
-								Arrays.toString( keyArray)),
-						lastLanguage, language);
 			SortedMap<String, Locale> sortedMap 
 			= treeMap.subMap( language.concat( ",,,"), language.concat( "Z,,,"));
 			List<Locale> localeList = new ArrayList<Locale>( sortedMap.values());
@@ -661,8 +681,7 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 					ultimateFallbackLocale,
 					languagePolicyLocaleFallbackHandler
 					.getNextFallbackLocale( 
-							treeMap.get( keyArray[ index + localeList.size()])
-							)
+							treeMap.get( keyArray[ index + localeList.size()]))
 					);
 			index = index + localeList.size() - 1;
 			testLanguageCount++;
@@ -1172,7 +1191,7 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 			final LocaleListLanguage localeListLanguage) {
 		
 		Logger logger = getLogger();
-		Locale ultimateFallbackLocale = null;
+		Locale ultimateFallbackLocale = Locale.getDefault();
 		LanguagePolicyLocaleFallbackHandler languagePolicyLocaleFallbackHandler
 		= new LanguagePolicyLocaleFallbackHandler( ultimateFallbackLocale);
 		
@@ -1390,7 +1409,7 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 				iterator.remove();
 			} // while
 			
-		Locale ultimateFallbackLocale = null;
+		Locale ultimateFallbackLocale = Locale.getDefault();
 		int testedLocaleInputCount = 0;
 		iterator = navigableKeySet.iterator();
 		while( iterator.hasNext()) {
@@ -1411,7 +1430,7 @@ public class LanguagePolicyLocaleFallbackHandlerTest {
 			
 			LanguagePolicyLocaleFallbackHandler languagePolicyLocaleFallbackHandler
 			= new LanguagePolicyLocaleFallbackHandler( ultimateFallbackLocale);
-				languagePolicyLocaleFallbackHandler.setFallbackLocalesList(localeList);
+				languagePolicyLocaleFallbackHandler.setFallbackLocalesList( localeList);
 				Assert.assertEquals(
 						String.format(
 								"Unexpected fall-back locale returned by %1$s." 
