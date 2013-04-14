@@ -87,7 +87,7 @@
 			
 			<slim3_version>1.0.16</slim3_version>
 			<aspectj_version>1.7.1</aspectj_version>
-			<slf4j_version>1.6.0</slf4j_version>
+			<slf4j_version>1.7.2</slf4j_version>
 				<!-- version of artifacts from org.slf4j needs to be matched with 
 					slf4j-api version what logback-classic depends on. -->				
 			<junit_version>4.11</junit_version>
@@ -127,9 +127,15 @@
 			
 			<!-- These dependencies are here just for enabling logging -->
 			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j_version}</version>
+			</dependency>
+			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>1.0.9</version>
+				<scope>provided</scope>
 			</dependency>
 				<!-- version of artifacts from org.slf4j needs to be matched with 
 					slf4j-api version what logback-classic depends on. -->
@@ -137,17 +143,24 @@
 					<groupId>org.slf4j</groupId>
 					<artifactId>jcl-over-slf4j</artifactId>
 					<version>${slf4j_version}</version>
+					<scope>provided</scope>
 				</dependency>
 				<dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 					<version>${slf4j_version}</version>
+					<scope>provided</scope>
 				</dependency>
 		</dependencies>
 	</dependencyManagement>
 	
 	<dependencies>
 		<!-- Compile scope -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+			</dependency>
+		<!-- Provided scope -->
 			<!-- These dependencies are here just for enabling logging -->
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
@@ -157,10 +170,10 @@
 					<groupId>org.slf4j</groupId>
 					<artifactId>jcl-over-slf4j</artifactId>
 				</dependency>
-				<dependency>
+				<!-- dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
-				</dependency>
+				</dependency -->
 		<!-- Test scope -->
 			<dependency>
 				<groupId>junit</groupId>
