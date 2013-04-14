@@ -193,7 +193,7 @@ public class ViewResolverConfig implements ViewResolverConfigCase, ApplicationCo
 		ViewResolverDefinitionInjector viewResolverDefinitionInjector = new ViewResolverDefinitionInjector();
 			viewResolverDefinitionInjector.setApplicationContext( getApplicationContext());
 			viewResolverDefinitionInjector.addViewResolverDefinition();
-		return new ViewResolverDefinitionInjector();
+		return viewResolverDefinitionInjector;
 	}
 	// --------------------------------------------------------------------------------------------	
 		
