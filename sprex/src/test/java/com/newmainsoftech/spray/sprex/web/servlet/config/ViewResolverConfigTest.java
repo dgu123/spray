@@ -48,6 +48,10 @@ public class ViewResolverConfigTest {
 		protected void configureDefaultServletHandling( DefaultServletHandlerConfigurer configurer) {
 			super.configureDefaultServletHandling(configurer);
 			configurer.enable();
+				/* This configures a DefaultServletHttpRequestHandler with a URL mapping of "/**" and 
+				 * the lowest priority relative to other URL mappings. 
+				 * DefaultServletHttpRequestHandler will forward all requests to the default Servlet. 
+				 */
 		}
 		// --------------------------------------------------------------------------------------------
 		
@@ -164,8 +168,16 @@ public class ViewResolverConfigTest {
 				)
 		.andDo( MockMvcResultHandlers.print())
 		.andExpect( MockMvcResultMatchers.handler().handlerType( ParameterizableViewController.class))
+			/* About ParameterizableViewController: 
+			 * ParameterizableViewController immediately forwards to a view. 
+			 * Use it in static cases when there is no Java controller logic to execute before 
+			 * the view generates the response.
+			 * mvc:view-controller automatically registers a ParameterizableViewController
+			 * that selects a view for rendering. 
+			 */
 		.andExpect( MockMvcResultMatchers.status().isOk())
-		.andExpect( MockMvcResultMatchers.forwardedUrl( ViewResolverConfigTestConfig.getTestStaticResourcePath()))
+		.andExpect( MockMvcResultMatchers
+				.forwardedUrl( ViewResolverConfigTestConfig.getTestStaticResourcePath()))
 		.andExpect( MockMvcResultMatchers.view().name( ViewResolverConfigTestConfig.getStaticTestViewName()));		
 	}
 	
