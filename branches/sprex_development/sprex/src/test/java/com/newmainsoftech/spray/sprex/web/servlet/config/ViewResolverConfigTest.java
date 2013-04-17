@@ -43,7 +43,6 @@ public class ViewResolverConfigTest {
 			}
 
 		// Configure default Servlet mapping ----------------------------------------------------------
-			// Since SpringWebAppContextConfig setup default Servlet mapping.
 		@Override
 		protected void configureDefaultServletHandling( DefaultServletHandlerConfigurer configurer) {
 			super.configureDefaultServletHandling(configurer);
