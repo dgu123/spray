@@ -33,9 +33,11 @@ import com.newmainsoftech.spray.sprex.web.servlet.config.ViewResolverConfigCase.
  * does not work (broken) with {@link Configuration @Configuration} of Spring' JavaConfig 
  * (but {@link BeanFactoryPostProcessor}.) For more info regarding this issue, refer to 
  * <ul>
- * <li></li>
- * </ul> 
- * <br />
+ *  <li>https://jira.springsource.org/browse/SPR-8269</li>
+ *  <li>http://forum.springsource.org/showthread.php?56712-PostConstruct-and-PreDestroy-in-JavaConfig</li>
+ *  <li>https://jira.springsource.org/browse/SPR-7868</li>
+ *  <li>http://forum.springsource.org/showthread.php?56712-PostConstruct-and-PreDestroy-in-JavaConfig</li>
+ * </ul>
  * This implementation add the following view resolver beans: 
  * <ul>
  * <li><code>{@link BeanNameViewResolver}</code> bean<br />
@@ -49,7 +51,13 @@ import com.newmainsoftech.spray.sprex.web.servlet.config.ViewResolverConfigCase.
  * <code>{@link ViewResolverDefinitionInjector}</code> class.  
  * </li> 
  * </ul>
- * If those do not fit to your preference, then override this method.   
+ * If those do not fit to your preference, then override the following methods (from <code>
+ * {@link ViewResolverDefinitionInjectorCase}</code> interface:
+ * <ul>
+ *  <li><code>{@link #addViewResolverDefinition()}</code>
+ *  <li><code>{@link #addViewResolverDefinition(BeanDefinitionRegistry)}</code>
+ *  </li>
+ * </ul>
  * 
  * @author Arata.Y
  */
