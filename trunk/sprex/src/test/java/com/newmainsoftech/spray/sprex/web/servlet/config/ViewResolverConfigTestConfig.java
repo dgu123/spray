@@ -132,7 +132,7 @@ import org.springframework.web.servlet.view.InternalResourceView;
 			viewResolverDefinitionInjector.setApplicationContext( getApplicationContext());
 			viewResolverDefinitionInjector.setViewXmlLocation( getViewXmlLocation());
 			viewResolverDefinitionInjector.addViewResolverDefinition();
-		return new ViewResolverDefinitionInjector();
+		return viewResolverDefinitionInjector;
 	}
 	// --------------------------------------------------------------------------------------------	
 	// For testing of resolving internal resource view --------------------------------------------	
