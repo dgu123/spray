@@ -236,8 +236,8 @@ public class ViewResolverConfig implements ViewResolverConfigCase, ApplicationCo
 	// For ContentNegotiatingViewResolver ---------------------------------------------------------	
 	/**
 	 * Holder of Media types what <code>{@link ViewResolverConfig}</code> supports. <br />
-	 * This class is just for avoiding failure in instantiating <code>ViewResolverConfig</code bean by 
-	 * circular reference with <code>{@link ViewResolverConfig#mvcContentNegotiationManager}</code> in 
+	 * This class is just for avoiding failure in instantiating <code>ViewResolverConfig</code> bean by 
+	 * circular reference with <code>{@link ViewResolverConfig#contentNegotiationManager}</code> in 
 	 * app's configuring {@link ContentNegotiationManager} object. <br />
 	 * The autowiring order of <code>ViewResolverConfig</code> and <code>SupportingMediaType</code> 
 	 * somewhat important: <code>SupportingMediaType</code> must be autowired ahead in your code of 
