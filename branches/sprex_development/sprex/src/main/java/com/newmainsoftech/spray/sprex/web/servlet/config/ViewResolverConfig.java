@@ -52,7 +52,6 @@ public class ViewResolverConfig implements ViewResolverConfigCase, ApplicationCo
 			public int getOrder() {
 				return order;
 			}
-
 		private ViewResolverOrder( int order) {
 			this.order = order;
 		}
@@ -78,7 +77,8 @@ public class ViewResolverConfig implements ViewResolverConfigCase, ApplicationCo
 	= (String)(ViewResolverConfigCommonDefualtValue.StaticResourceRootPath.getValue());
 		/**
 		 * Override this to specify path to root folder of static resources other than default one 
-		 * what is {@value #StaticResourceRootPath}. 
+		 * what will be obtained as value of 
+		 * <code>{@link com.newmainsoftech.spray.sprex.web.servlet.config.ViewResolverConfigCase.ViewResolverConfigCommonDefualtValue#StaticResourceRootPath}</code>. 
 		 * 
 		 * @return Path to root folder of static resources what will be used in {@link StaticViewResolver} 
 		 * bean to identify and yield view for static resource request.
@@ -89,8 +89,11 @@ public class ViewResolverConfig implements ViewResolverConfigCase, ApplicationCo
 		}
 	
 	/**
-	 * @return <code>{@link StaticViewResolver}</code> bean what will be used to resolve the view for 
-	 * static resources under the path being returned by <code>{@link getStaticResourceRootPath()}</code>.
+	 * Factory method of <code>{@link StaticViewResolver}</code> bean for dependency injection.<br />
+	 * Returned <code>{@link StaticViewResolver}</code> bean will be used to resolve view for 
+	 * static resources under path being returned by <code>{@link #getStaticResourceRootPath()}</code>.
+	 * 
+	 * @return <code>{@link StaticViewResolver}</code> bean.
 	 */
 	@Bean
 	public StaticViewResolver staticViewResolver() {
@@ -104,14 +107,14 @@ public class ViewResolverConfig implements ViewResolverConfigCase, ApplicationCo
 	 * Registers request mapping for static case (what do not involve no controller logic). <br />
 	 * In this default implementation, register a view controller for static resources under the path 
 	 * being returned by <code>{@link #getStaticResourceRootPath()}</code> method with using 
-	 * the value of <code>{@link ViewResolverConfigCommonDefualtValue.StaticResourceViewName}</code>  
+	 * the value of <code>{@link com.newmainsoftech.spray.sprex.web.servlet.config.ViewResolverConfigCase.ViewResolverConfigCommonDefualtValue#StaticResourceViewName}</code>  
 	 * as the view name.<br />
 	 * If that is not preferable, then override this.
 	 * 
 	 * @param registry
 	 */
 	@Override
-	public void addViewControllers( ViewControllerRegistry registry) {
+	public void addViewControllers( final ViewControllerRegistry registry) {
 		String staticResourceRootPath = getStaticResourceRootPath();
 		if ( ( staticResourceRootPath != null) && ( staticResourceRootPath.length() > 0)) {
 			if ( !staticResourceRootPath.endsWith( "*")) {
@@ -145,7 +148,8 @@ public class ViewResolverConfig implements ViewResolverConfigCase, ApplicationCo
 	
 	@Autowired ApplicationContext applicationContext;
 		@Override
-		public void setApplicationContext( ApplicationContext applicationContext) throws BeansException {
+		public void setApplicationContext( 
+				final ApplicationContext applicationContext) throws BeansException {
 			this.applicationContext = applicationContext;
 		}
 		protected ApplicationContext getApplicationContext() {

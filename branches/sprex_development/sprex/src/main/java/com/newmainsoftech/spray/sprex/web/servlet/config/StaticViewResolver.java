@@ -77,7 +77,7 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 			public String getResolvedViewName() {
 				return resolvedViewName;
 			}
-			public void setResolvedViewName( String resolvedViewName) {
+			public void setResolvedViewName( final String resolvedViewName) {
 				this.resolvedViewName = resolvedViewName;
 			}
 		
@@ -91,7 +91,9 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 		
 		@Override
 		protected void renderMergedOutputModel( 
-				final Map<String, Object> model, final HttpServletRequest request, final HttpServletResponse response)
+				final Map<String, Object> model, 
+				final HttpServletRequest request, 
+				final HttpServletResponse response)
 		throws Exception {
 			
 			String requestURI = request.getRequestURI();
@@ -137,15 +139,15 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 		/**
 		 * Check whether the underlying resource that the configured {@link #resolvedViewName} member 
 		 * field points to actually exists. <br />
-		 * This default implementation returns true for any locale. Override this if it is necessary to 
-		 * locale dependent static resource. 
+		 * This default implementation <u>always returns true</u> for any locale. Override this if it is 
+		 * necessary to locale dependent static resource. 
 		 * 
 		 * @param locale the desired Locale that we're looking for
 		 * @return <code>true</code> if the resource exists (or is assumed to exist);
 		 * <code>false</code> if we know that it does not exist
 		 * @throws Exception if the resource exists but is invalid (e.g. could not be parsed)
 		 */
-		public boolean checkResource( Locale locale) throws Exception {
+		public boolean checkResource( final Locale locale) throws Exception {
 			return true;
 		}
 	}
@@ -161,16 +163,18 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 
 	private String delegateViewName;
 		/**
-		 * Retrieve the attribute value of delegation view name being commonly used for each static resource 
-		 * under the same root path being returned by {@link #getStaticResourceRootPath()} method, in order to 
+		 * Retrieve the attribute value of delegation view name being commonly used 
+		 * for each static resource under the same root path being returned by 
+		 * <code>{@link #getStaticResourceRootPath()}</code> method, in order to 
 		 * avoid instantiation of individual bean for each static resource.
 		 *  
-		 * @return delegation view name being commonly used for each static resource under the same root path.  
+		 * @return delegation view name being commonly used for each static resource under 
+		 * the same root path.  
 		 */
 		public String getDelegateViewName() {
 			return delegateViewName;
 		}
-		protected void setDelegateViewName( String delegateViewName) {
+		protected void setDelegateViewName( final String delegateViewName) {
 			this.delegateViewName = delegateViewName;
 		}
 	private String staticResourceRootPath;
@@ -223,7 +227,7 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 		 * @param requestContextAttribute name of the RequestContext attribute
 		 * @see AbstractView#setRequestContextAttribute
 		 */
-		public void setRequestContextAttribute(String requestContextAttribute) {
+		public void setRequestContextAttribute( final String requestContextAttribute) {
 			this.requestContextAttribute = requestContextAttribute;
 		}
 		/**
@@ -246,7 +250,7 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 		 * @see org.springframework.beans.propertyeditors.PropertiesEditor
 		 * @see AbstractView#setAttributes
 		 */
-		public void setAttributes(Properties props) {
+		public void setAttributes( final Properties props) {
 			CollectionUtils.mergePropertiesIntoMap(props, this.staticAttributes);
 		}
 
@@ -257,9 +261,9 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 		 * @param attributes Map with name Strings as keys and attribute objects as values
 		 * @see AbstractView#setAttributesMap
 		 */
-		public void setAttributesMap(Map<String, ?> attributes) {
-			if (attributes != null) {
-				this.staticAttributes.putAll(attributes);
+		public void setAttributesMap( final Map<String, ?> attributes) {
+			if ( attributes != null) {
+				this.staticAttributes.putAll( attributes);
 			}
 		}
 
@@ -287,7 +291,7 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 	 * @throws Exception when encounters obstacle in instantiating view object.
 	 * @see #loadView(String, java.util.Locale)
 	 */
-	protected StaticViewResolver.StaticResourceView buildView( String viewName) throws Exception {
+	protected StaticViewResolver.StaticResourceView buildView( final String viewName) throws Exception {
 		StaticViewResolver.StaticResourceView view 
 		= (StaticViewResolver.StaticResourceView) BeanUtils.instantiateClass( StaticViewResolver.StaticResourceView.class);
 			view.setResolvedViewName( viewName);
@@ -308,13 +312,13 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 	 * </li>
 	 * </ul>
 	 * 
-	 * @param viewName
-	 * @param view
-	 * @return
+	 * @param viewName Name of view. 
+	 * @param view View object.
+	 * @return view as bean.
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 */
-	protected View applyLifecycleMethods( String viewName, AbstractView view) {
+	protected View applyLifecycleMethods( final String viewName, final AbstractView view) {
 		return (View)(getApplicationContext().getAutowireCapableBeanFactory().initializeBean( view, viewName));
 	}
 	
@@ -397,7 +401,7 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 		}
 	}
 	
-	protected final static boolean IsRedirectContextRelativeByDefault = true;
+	public final static boolean IsRedirectContextRelativeByDefault = true;
 		public static boolean isRedirectContextRelativeByDefault() {
 			return IsRedirectContextRelativeByDefault;
 		}
@@ -406,13 +410,14 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 		/**
 		 * Set whether to interpret a given redirect URL that starts with a slash ("/") as relative to 
 		 * the current ServletContext.<br />
-		 * Default is "{@value StaticViewResolver#IsRedirectContextRelativeByDefault}". 
+		 * Default is "{@value #IsRedirectContextRelativeByDefault}". 
 		 * i.e. as relative to the web application root thereby the context path will be prepended to 
 		 * the URL if it's true. <br />
-		 * <b>Redirect URLs are specified with the {@value UrlBasedViewResolver#REDIRECT_URL_PREFIX} 
-		 * prefix.</b> E.g.: "{@value UrlBasedViewResolver#REDIRECT_URL_PREFIX}myAction.do"
+		 * <b>Redirect URLs are specified with the 
+		 * {@value org.springframework.web.servlet.view.UrlBasedViewResolver#REDIRECT_URL_PREFIX} prefix.
+		 * </b> E.g.: "{@value org.springframework.web.servlet.view.UrlBasedViewResolver#REDIRECT_URL_PREFIX}myAction.do"
 		 * 
-		 * @see RedirectView#setContextRelative
+		 * @see org.springframework.web.servlet.view.RedirectView#setContextRelative
 		 */
 		public void setRedirectContextRelative( boolean redirectContextRelative) {
 			this.redirectContextRelative = redirectContextRelative;
@@ -440,11 +445,12 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 		 * Many HTTP 1.1 clients treat 302 just like 303, not making any difference. However, some 
 		 * clients depend on 303 when redirecting after a POST request; turn this flag off in such 
 		 * a scenario. <br />
-		 * <b>Redirect URLs are specified with the {@value UrlBasedViewResolver#REDIRECT_URL_PREFIX} prefix.</b>
-		 * E.g.: "{@value UrlBasedViewResolver#REDIRECT_URL_PREFIX}myAction.do"
+		 * <b>Redirect URLs are specified with the 
+		 * {@value org.springframework.web.servlet.view.UrlBasedViewResolver#REDIRECT_URL_PREFIX} prefix.
+		 * </b> E.g.: "{@value org.springframework.web.servlet.view.UrlBasedViewResolver#REDIRECT_URL_PREFIX}myAction.do"
 		 * 
-		 * @see RedirectView#setHttp10Compatible
-		 * @see UrlBasedViewResolver#REDIRECT_URL_PREFIX
+		 * @see org.springframework.web.servlet.view.RedirectView#setHttp10Compatible
+		 * @see org.springframework.web.servlet.view.UrlBasedViewResolver#REDIRECT_URL_PREFIX
 		 */
 		public void setRedirectHttp10Compatible( boolean redirectHttp10Compatible) {
 			this.redirectHttp10Compatible = redirectHttp10Compatible;
@@ -467,8 +473,8 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 	 * Create <code>{@link View}</code> when <code>viewName</code> input starts with the prefix of static resource 
 	 * path what has been set by <code>{@link #setStaticResourceRootPath(String) setStaticResourceRootPath}</code> 
 	 * method.<br />
-	 * Overridden to process {@value UrlBasedViewResolver#REDIRECT_URL_PREFIX} prefix and 
-	 * {@value UrlBasedViewResolver#FORWARD_URL_PREFIX} prefix. 
+	 * Overridden to process {@value org.springframework.web.servlet.view.UrlBasedViewResolver#REDIRECT_URL_PREFIX} prefix and 
+	 * {@value org.springframework.web.servlet.view.UrlBasedViewResolver#FORWARD_URL_PREFIX} prefix. 
 	 * 
 	 * @param viewName The value is expected to have been yield by <code>{@link RequestToViewNameTranslator}</code> 
 	 * (via <code>{@link ParameterizableViewController}</code>.)<br />
