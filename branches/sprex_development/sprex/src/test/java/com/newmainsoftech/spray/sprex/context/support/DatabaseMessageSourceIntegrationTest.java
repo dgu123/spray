@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -40,7 +41,11 @@ public class DatabaseMessageSourceIntegrationTest {
 		final String testViewPath 
 		= getTestServerPath().concat( SpringIntegrationTestDispatcherServletConfig.getTestViewName());
 		final WebClient webClient = new WebClient();
-		
+			WebClientOptions webClientOptions = webClient.getOptions();
+			webClientOptions.setRedirectEnabled( true);
+			webClientOptions.setJavaScriptEnabled( true);
+			webClientOptions.setThrowExceptionOnFailingStatusCode( true);
+			webClientOptions.setThrowExceptionOnScriptError( true);
 		HtmlPage htmlPage = webClient.getPage( testViewPath);
 			Logger logger = getLogger();
 			if ( logger.isDebugEnabled()) {
