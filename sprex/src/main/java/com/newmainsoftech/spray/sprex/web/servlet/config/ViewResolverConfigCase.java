@@ -88,21 +88,24 @@ public interface ViewResolverConfigCase {
 		}
 		
 		/**
-		 * This method is to let the <code>{@link Configuration @Configuration}</code> implementation with this interface  
-		 * have ability to add supporting media types to <code>{@link ContentNegotiationConfigurer}</code>. <br />
-		 * So that, this may help to concentrate view related configuration to the <code>@Configuration</code> 
-		 * implementation with this interface.<br />
-		 * In order to let the <code>@Configuration</code> implementation with this interface have the ability, 
-		 * such <code>@Configuration</code> implementation needs to be imported to sub-class of 
-		 * <code>{@link WebMvcConfigurationSupport}</code>, and this method must be call (directly or indirectly) at 
-		 * inside of overridden configureContentNegotiation method of that sub-class.
+		 * This method is to let the <code>{@link Configuration @Configuration}</code> 
+		 * implementation with this interface have ability to add supporting media types to 
+		 * <code>{@link ContentNegotiationConfigurer}</code>. <br />
+		 * So that, this may help to concentrate view related configuration to 
+		 * the <code>@Configuration</code> implementation with this interface.<br />
+		 * In order to let the <code>@Configuration</code> implementation with this interface 
+		 * has the ability, such <code>@Configuration</code> implementation needs to be imported 
+		 * to sub-class of <code>{@link WebMvcConfigurationSupport}</code>, and this method must be 
+		 * call (directly or indirectly) at inside of overridden configureContentNegotiation method of 
+		 * that sub-class.
 		 * 
-		 * @return
+		 * @return map object for the pair of file extension as key and media type as value.
 		 */
 		public Map<String, MediaType> getMediaTypes();
 		
 		/**
-		 * @return Parameter name being given to <code>{@link ContentNegotiationConfigurer#parameterName(String)}</code> method.
+		 * @return Parameter name being given to 
+		 * <code>{@link ContentNegotiationConfigurer#parameterName(String)}</code> method.
 		 */
 		abstract String getMediaTypeParameterName();		
 	}

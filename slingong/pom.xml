@@ -39,17 +39,17 @@
      
 	<dependencies>
 		<!-- Compile scope -->
+			<dependency>
+				<groupId>com.newmainsoftech.spray</groupId>
+				<artifactId>sprex</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
 		    <dependency>
 		    	<groupId>org.aspectj</groupId>
 		    	<artifactId>aspectjrt</artifactId>
 		    	<version>${aspectj_version}</version>
 		    </dependency>
 		
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${spring_version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-tx</artifactId>

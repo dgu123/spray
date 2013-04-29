@@ -211,7 +211,63 @@ implements InitializingBean, LocaleFallbackHandlerCase {
 	}
 	// --------------------------------------------------------------------------------------------
 
+	public void setMessage( final String code, final Locale locale, final String message) {
+		// Validate input arguments ---------------------------------------------------------------
+		if ( ( message == null) || "".equals( message)) {
+			throw new IllegalArgumentException( 
+					"Value of message input to add can be neither null nor empty string.");
+		}
+		if ( ( code == null) || "".equals( code)) {
+			throw new IllegalArgumentException( 
+					String.format(
+							"Value of code input as MessageModel key value to add \"%1$s...\" message " 
+							+ "can be neither null nor empty string.", 
+							message.substring( 0, 50))
+					);
+		}
+		if ( locale == null) {
+			throw new IllegalArgumentException(
+					String.format(
+							"Null is not allowed as the locale argument value to add \"%1$s...\" message.",
+							message.substring( 0, 50))
+					);
+		}
+		// ----------------------------------------------------------------------------------------
+		
+		getMessageDao().setMessage( code, locale, message);
+	}
 	
+	public void removeMessage( final String code, final Locale locale) {
+		// Validate input arguments ---------------------------------------------------------------
+		if ( ( code == null) || "".equals( code)) {
+			throw new IllegalArgumentException( 
+					"Value of code input as MessageModel key value to remove message can be " 
+					+ "neither null nor empty string.");
+		}
+		if ( locale == null) {
+			throw new IllegalArgumentException( 
+					String.format(
+							"Null is not allowed as the locale argument value to remove message " 
+							+"corresponding message code %1$s.",
+							code)
+					);
+		}
+		// ----------------------------------------------------------------------------------------
+		
+		getMessageDao().removeMessage( code, locale);
+	}
+	
+	public void removeMessages( final String code) {
+		// Validate input arguments ---------------------------------------------------------------
+		if ( ( code == null) || "".equals( code)) {
+			throw new IllegalArgumentException( 
+					"Value of code input as MessageModel key value to remove message(s) can be " 
+					+ "neither null nor empty string.");
+		}
+		// ----------------------------------------------------------------------------------------
+		
+		getMessageDao().removeMessages( code);
+	}
 	
 	// InitializingBean interface implementation --------------------------------------------------
 	@Override

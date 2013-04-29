@@ -24,6 +24,7 @@
     </links>
 	<menu name="Modules">
 		<item name="SlingOnG" href="slingong/index.html" />
+		<item name="Sprex" href="sprex/index.html" />
 	</menu>
     <menu ref="parent" />
     <menu ref="reports" />
