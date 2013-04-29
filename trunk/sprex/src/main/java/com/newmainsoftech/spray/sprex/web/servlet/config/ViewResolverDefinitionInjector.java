@@ -69,7 +69,8 @@ public class ViewResolverDefinitionInjector implements ApplicationContextAware, 
 		
 	@Autowired ApplicationContext applicationContext;
 		@Override
-		public void setApplicationContext( ApplicationContext applicationContext) throws BeansException {
+		public void setApplicationContext( final ApplicationContext applicationContext) 
+		throws BeansException {
 			this.applicationContext = applicationContext;
 		}
 		protected ApplicationContext getApplicationContext() {
@@ -79,7 +80,7 @@ public class ViewResolverDefinitionInjector implements ApplicationContextAware, 
 			return applicationContext;
 		}
 	
-	protected void addBeanNameViewResolverDefinition( BeanDefinitionRegistry registry) {
+	protected void addBeanNameViewResolverDefinition( final BeanDefinitionRegistry registry) {
 		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 			beanDefinition.setBeanClass( BeanNameViewResolver.class);
 			beanDefinition.setScope( BeanDefinition.SCOPE_SINGLETON);
@@ -103,6 +104,11 @@ public class ViewResolverDefinitionInjector implements ApplicationContextAware, 
 			}
 	}
 	
+	/**
+	 * Holder of default location of view definition XML file.<br />
+	 * Its value is obtained from the value of 
+	 * <code>{@link ViewResolverConfigCommonDefualtValue#ViewXmlLocationPath}</code>.
+	 */
 	public final static String DefaultViewXmlLocation 
 	= (String)(ViewResolverConfigCommonDefualtValue.ViewXmlLocationPath.getValue());
 		public static String getDefaultViewXmlLocation() {
@@ -116,7 +122,7 @@ public class ViewResolverDefinitionInjector implements ApplicationContextAware, 
 		 * 
 		 * @return Class path of view definition xml file being used by <code>{@link XmlViewResolver}</code> 
 		 * bean. <br />
-		 * Default location is &quot;{@value ViewResolverDefinitionInjector#DefaultViewXmlLocation}&quot;.
+		 * Default location is obtained from <code>{@link ViewResolverDefinitionInjector#DefaultViewXmlLocation}</code>.
 		 */
 		public String getViewXmlLocation() {
 			return viewXmlLocation;
@@ -124,10 +130,11 @@ public class ViewResolverDefinitionInjector implements ApplicationContextAware, 
 		/**
 		 * Set class path string of view definition xml file being used by <code>{@link XmlViewResolver}</code> 
 		 * bean. <br />
-		 * Default location is {@value ViewResolverDefinitionInjector#DefaultViewXmlLocation}.
+		 * Default location is obtained from <code>{@link ViewResolverDefinitionInjector#DefaultViewXmlLocation}</code>.
+		 * 
 		 * @param viewXmlLocation
 		 */
-		public void setViewXmlLocation( String viewXmlLocation) {
+		public void setViewXmlLocation( final String viewXmlLocation) {
 			this.viewXmlLocation = viewXmlLocation;
 		}
 	
@@ -139,7 +146,7 @@ public class ViewResolverDefinitionInjector implements ApplicationContextAware, 
 		}
 	
 	
-	protected void addXmlViewResolverBeanDefinition( BeanDefinitionRegistry registry) {
+	protected void addXmlViewResolverBeanDefinition( final BeanDefinitionRegistry registry) {
 		/* It may be preferable to use the combination of 
 		 * {@link BeanFactoryPostProcessor#postProcessBeanFactory(ConfigurableListableBeanFactory)} and 
 		 * applyLifecycleMethods method like one in {@link StaticViewResolver#applyLifecycleMethods(String, AbstractView)} 
@@ -208,7 +215,7 @@ public class ViewResolverDefinitionInjector implements ApplicationContextAware, 
 	 * @see com.newmainsoftech.spray.sprex.web.servlet.config.ViewResolverDefinitionInjectorCase#addViewResolverDefinition(org.springframework.beans.factory.support.BeanDefinitionRegistry)
 	 */
 	@Override
-	public void addViewResolverDefinition( BeanDefinitionRegistry registry) {
+	public void addViewResolverDefinition( final BeanDefinitionRegistry registry) {
 		addBeanNameViewResolverDefinition( registry);
 		addXmlViewResolverBeanDefinition( registry);
 	}

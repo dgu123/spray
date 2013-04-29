@@ -43,7 +43,7 @@ public class InternationalizationConfigTest {
 		}
 		
 	@Controller // --------------------------------------------------------------------------------
-	public static class TestController {
+	public static class InternationalizationConfigMockTestController {
 		Logger logger = LoggerFactory.getLogger( this.getClass());
 			public final Logger getLogger() {
 				return logger;
@@ -56,7 +56,8 @@ public class InternationalizationConfigTest {
 			for( char charTypeObj : input.toCharArray()) {
 				charStr = Integer.toHexString( charTypeObj);
 				if ( charStr.length() < 4) {
-					String formatStr = "%1$0".concat( String.valueOf(  4 - charStr.length())).concat( "d%2$s");
+					String formatStr 
+					= "%1$0".concat( String.valueOf(  4 - charStr.length())).concat( "d%2$s");
 					charStr = String.format( formatStr, 0, charStr);
 				}
 				htmlUnicodeCodeReferenceExpression 
@@ -141,12 +142,12 @@ public class InternationalizationConfigTest {
 				return localeResolver;
 			}
 
-		public final static String RequestTestUrl = "/index";
+		public final static String RequestTestUrl = "/internationalizationConfigTest";
 			public static final String getRequestTestUrl() {
 				return RequestTestUrl;
 			}
 
-		@RequestMapping( "/index")
+		@RequestMapping( InternationalizationConfigMockTestController.RequestTestUrl)
 		@ResponseBody
 		public String getIndexView( final HttpServletRequest request, final HttpServletResponse response) {
 			
@@ -161,10 +162,10 @@ public class InternationalizationConfigTest {
 				}
 					
 			if ( Locale.ENGLISH.equals( locale)) {
-				return TestController.getEnglishResponse();
+				return InternationalizationConfigMockTestController.getEnglishResponse();
 			}
 			else if ( Locale.JAPANESE.equals( locale)) {
-				final String japaneseResponse = TestController.getJapaneseResponse();
+				final String japaneseResponse = InternationalizationConfigMockTestController.getJapaneseResponse();
 					if ( logger.isDebugEnabled()) {
 						logger.debug( 
 								String.format( "Returing Japanese response : %1$s", japaneseResponse)
@@ -173,7 +174,7 @@ public class InternationalizationConfigTest {
 				return japaneseResponse;
 			}
 			else {
-				return TestController.getNonLinquisticResponse();				
+				return InternationalizationConfigMockTestController.getNonLinquisticResponse();				
 			}			
 		}
 	}
@@ -193,8 +194,8 @@ public class InternationalizationConfigTest {
 
 
 		@Bean
-		public TestController testController() {
-			return new TestController();
+		public InternationalizationConfigMockTestController internationalizationConfigMockTestController() {
+			return new InternationalizationConfigMockTestController();
 		}
 	}
 	// --------------------------------------------------------------------------------------------
@@ -224,7 +225,8 @@ public class InternationalizationConfigTest {
 	@Before
 	public void setUp() {
 		mockMvc = MockMvcBuilders.webAppContextSetup( getWebApplicationContext()).build();
-/*		StandaloneMockMvcBuilder standaloneMockMvcBuilder = MockMvcBuilders.standaloneSetup( getTestController());
+/*		StandaloneMockMvcBuilder standaloneMockMvcBuilder 
+ 		= MockMvcBuilders.standaloneSetup( getTestController());
 			standaloneMockMvcBuilder.addInterceptors( getLocaleChangeInterceptor());
 			standaloneMockMvcBuilder.setLocaleResolver( getLocaleResolver());
 		setMockMvc( standaloneMockMvcBuilder.build());
@@ -236,34 +238,37 @@ public class InternationalizationConfigTest {
 		MockMvc mockMvcObj = getMockMvc();
 		mockMvcObj
 		.perform( 
-				MockMvcRequestBuilders.get( TestController.getRequestTestUrl())
+				MockMvcRequestBuilders.get( InternationalizationConfigMockTestController.getRequestTestUrl())
 				.accept( MediaType.TEXT_HTML, MediaType.TEXT_PLAIN)
 				)
 		.andDo( MockMvcResultHandlers.print())
 		.andExpect( MockMvcResultMatchers.status().isOk())
-		.andExpect( MockMvcResultMatchers.content().string( TestController.getEnglishResponse()));
+		.andExpect( MockMvcResultMatchers.content().string( 
+						InternationalizationConfigMockTestController.getEnglishResponse()));
 		
 		mockMvcObj
 		.perform( 
-				MockMvcRequestBuilders.get( TestController.getRequestTestUrl())
+				MockMvcRequestBuilders.get( InternationalizationConfigMockTestController.getRequestTestUrl())
 				.characterEncoding( "UTF-8")
 				.locale( Locale.ENGLISH).param( "locale", "ja")
 				.accept( MediaType.TEXT_HTML, MediaType.TEXT_PLAIN)
 				)
 		.andDo( MockMvcResultHandlers.print())
 		.andExpect( MockMvcResultMatchers.status().isOk())
-		.andExpect( MockMvcResultMatchers.content().string( TestController.getJapaneseResponse()));		
+		.andExpect( MockMvcResultMatchers.content().string( 
+				InternationalizationConfigMockTestController.getJapaneseResponse()));		
 		
 		Cookie cookie = new Cookie( CookieLocaleResolver.DEFAULT_COOKIE_NAME, "ja");
 		
 		mockMvcObj
 		.perform( 
-				MockMvcRequestBuilders.get( TestController.getRequestTestUrl())
+				MockMvcRequestBuilders.get( InternationalizationConfigMockTestController.getRequestTestUrl())
 				.accept( MediaType.TEXT_HTML, MediaType.TEXT_PLAIN)
 				.cookie( cookie)
 				)
 		.andDo( MockMvcResultHandlers.print())
 		.andExpect( MockMvcResultMatchers.status().isOk())
-		.andExpect( MockMvcResultMatchers.content().string( TestController.getJapaneseResponse()));
+		.andExpect( MockMvcResultMatchers.content().string( 
+				InternationalizationConfigMockTestController.getJapaneseResponse()));
 	}
 }
