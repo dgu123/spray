@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-	<comment>Default (English) tokens for testing configuration of Spring's ReloadableResourceBundleMessageSource</comment>
-	<entry key="hello">hello</entry>
-</properties>
