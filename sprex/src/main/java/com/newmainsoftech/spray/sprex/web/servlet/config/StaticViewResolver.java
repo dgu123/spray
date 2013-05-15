@@ -1,6 +1,7 @@
 package com.newmainsoftech.spray.sprex.web.servlet.config;
 
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -362,17 +363,31 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 	 * (If not, then later it will result eventually as <code>{@link #createView(String, java.util.Locale) 
 	 * createView}</code> method will return <code>null</code>.)
 	 * 
-	 * @param resourceUrl Path to a static resource to retrieve. <br />
+	 * @param resourceUrlStr Path to a static resource to retrieve. <br />
 	 * Expected to have '/' character as prefix.
 	 * @param locale Locale to retrieve the view for. <br />
 	 * It will be ignored in this implementation. If it's not desirable, then override this. 
 	 * @return Indicates whether this resolver applies to the specified view.
 	 */
-	protected boolean canHandle( final String resourceUrl, final Locale locale) {
-		if ( !resourceUrl.startsWith( getStaticResourceRootPath())) return false;
-		Log logger = getLogger();
+	protected boolean canHandle( final String resourceUrlStr, final Locale locale) {
+		if ( !resourceUrlStr.startsWith( getStaticResourceRootPath())) return false;
+		final Log logger = getLogger();
+		
+		final URL resourceUrl = this.getClass().getResource( resourceUrlStr);
+			if ( resourceUrl == null) {
+					if ( logger.isWarnEnabled()) {
+						logger.warn( 
+								String.format(
+										"Returing false as impossible to resolve a view for \"%1$s\" as " 
+										+ "static resource because \"%1$s\" is not found as a resource.", 
+										resourceUrlStr
+										)
+								);
+					}
+				return false;
+			}
 		try {
-			File file = new File( this.getClass().getResource( resourceUrl).toURI());
+			File file = new File( resourceUrl.toURI());
 			boolean canHandle = (file.exists() && file.isFile());
 				if ( logger.isDebugEnabled()) {
 					logger.debug( 
@@ -380,7 +395,7 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 									"Returning %1$b indicating whether possible to resolve a view for " 
 									+ "\"%2$s\" static resource.", 
 									canHandle, 
-									resourceUrl
+									resourceUrlStr
 									)
 							);
 				}
@@ -392,7 +407,7 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 							String.format(
 									"Returing false as impossible to resolve a view for \"%1$s\" static " 
 									+ "resource due to the occurence of the exception.", 
-									resourceUrl
+									resourceUrlStr
 									), 
 							exception
 							);
@@ -498,7 +513,8 @@ public class StaticViewResolver extends AbstractCachingViewResolver implements O
 			if ( logger.isDebugEnabled()) {
 				logger.debug( 
 						String.format(
-								"Returning null as view for the request( view name: %1$s, resouece: %2$s, locale: %3$s).",
+								"Returning null as view for the request( view name: %1$s, " 
+								+ "resouece: %2$s, locale: %3$s).",
 								viewName,
 								resourceUrl, 
 								locale
