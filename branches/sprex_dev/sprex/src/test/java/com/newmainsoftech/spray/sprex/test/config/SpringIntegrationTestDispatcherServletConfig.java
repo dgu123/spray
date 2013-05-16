@@ -149,7 +149,7 @@ public class SpringIntegrationTestDispatcherServletConfig extends WebMvcConfigur
 		}
 		
 	public static final Map<Locale, String> messageMap = new HashMap<Locale, String>();
-		{
+		static {
 			messageMap.put( Locale.ENGLISH, "English");
 			messageMap.put( Locale.US, "US");
 			messageMap.put( Locale.JAPANESE, "Japanese(日本語)");
