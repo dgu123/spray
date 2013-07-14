@@ -83,12 +83,6 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>net.sourceforge.htmlunit</groupId>
-				<artifactId>htmlunit</artifactId>
-				<version>2.12</version>
-				<scope>test</scope >
-			</dependency>
-			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<exclusions>
@@ -97,6 +91,13 @@
 						<artifactId>hamcrest-core</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-java</artifactId>
+				<version>2.29.1</version>
+				<scope>test</scope>
 			</dependency>
 	</dependencies>	  
 	
@@ -170,80 +171,11 @@
 					<stopKey>sprex_jetty</stopKey>
 				</configuration>
 			</plugin>
-			<!-- Construct exploded webapp directory for maven-tomcat-plugin.
-				But, since decided not use maven-tomcat-plugin because of its quality, 
-				these does not need too now. 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<id>prep_pre_integration_test</id>
-						<goals><goal>exploded</goal></goals>
-						<phase>pre-integration-test</phase>
-						<configuration>
-							<detail>true</detail>
-							<failOnMissingWebXml>false</failOnMissingWebXml>
-							<warSourceDirectory>${basedir}${file.separator}src${file.separator}test${file.separator}webapp</warSourceDirectory>
-							<webappDirectory>${project.build.directory}${file.separator}exploded_webapp</webappDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-	  			<groupId>org.apache.maven.plugins</groupId>
-	  			<artifactId>maven-antrun-plugin</artifactId>
-	  			<executions>
-	  				<execution>
-	  					<id>prep_pre_integration_test</id>
-	  					<goals><goal>run</goal></goals>
-						<phase>pre-integration-test</phase>
-						<configuration>
-							<target name="prep_pre_integration_test_target">
-								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath"/>
-								<copy todir="${project.build.directory}${file.separator}exploded_webapp${file.separator}WEB-INF${file.separator}classes${file.separator}com">
-									<fileset dir="${project.build.testOutputDirectory}${file.separator}com" />
-								</copy>
-							</target>
-						</configuration>
-	  				</execution>
-	  			</executions>
-			</plugin -->
-			<!-- Decided use jetty-maven-plugin instead of tomcat7-maven-plugin 
-				because of quality of tomcat7-maven-plugin. 
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>${tomcat7_maven_plugin_version}</version>
-				<executions>
-					<execution>
-						<id>start_pre_integration_test</id>
-						<phase>pre-integration-test</phase>
-						<goals><goal>run</goal></goals>
-						<configuration>
-							<fork>true</fork>
-							<ignorePackaging>true</ignorePackaging>
-							<useTestClasspath>true</useTestClasspath>
-							<warSourceDirectory>${basedir}${file.separator}src${file.separator}test${file.separator}webapp</warSourceDirectory>
-							<warDirectory>${project.build.directory}${file.separator}exploded_webapp</warDirectory>
-							<tomcatLoggingFile>${basedir}${file.separator}src${file.separator}test${file.separator}tomcatconf${file.separator}logging.properties</tomcatLoggingFile>
-						</configuration>
-					</execution>
-					<execution>
-						<id>stop_post_integration_test</id>
-						<phase>post-integration-test</phase>
-						<goals><goal>shutdown</goal></goals>
-					</execution>
-				</executions>
-				<configuration>	
-					<port>8080</port>
-					<detail>true</detail>
-				</configuration>
-			</plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+					<!-- Failsafe Plugin will not fail the build during the integration-test phase 
+						thus enabling the post-integration-test phase to execute. -->
 				<version>2.14.1</version>
 				<executions>
 					<execution>
