@@ -5,8 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -36,10 +41,12 @@ public class DatabaseMessageSourceIntegrationTest {
 			return TestServerPath;
 		}
 	
-	@Test
-	public void test_resolveCode() throws Throwable {
+	// version of test code using HtmlUnit directly rather than via Selenium's WebDriver, 
+	// in order to test resolveCode method
+/*	void htmlUnit_resolveCode_test_worker() throws Throwable {
 		final String testViewPath 
 		= getTestServerPath().concat( SpringIntegrationTestDispatcherServletConfig.getTestViewName());
+		
 		final WebClient webClient = new WebClient();
 			WebClientOptions webClientOptions = webClient.getOptions();
 			webClientOptions.setRedirectEnabled( true);
@@ -116,5 +123,93 @@ public class DatabaseMessageSourceIntegrationTest {
 						SpringIntegrationTestDispatcherServletConfig.getMessageMap().get( Locale.JAPAN),
 						h1Nodes.get( 0).getNodeValue()
 						);
+	}
+*/
+		
+	private WebDriver webDriver = new HtmlUnitDriver();
+		{
+			((HtmlUnitDriver)webDriver).setJavascriptEnabled( true);
+		}
+		public WebDriver getWebDriver() {
+			return webDriver;
+		}
+		public void setWebDriver( final WebDriver webDriver) {
+			this.webDriver = webDriver;
+		}
+	
+	@After
+	public void tearDown() {
+		getWebDriver().close();
+		getWebDriver().quit();
+	}
+		
+	@Test
+	public void test_resolveCode() throws Throwable {
+		final WebDriver webDriver = getWebDriver();
+
+		final String testViewPath 
+		= getTestServerPath().concat( SpringIntegrationTestDispatcherServletConfig.getTestViewName());
+		webDriver.get( testViewPath);
+			Logger logger = getLogger();
+			if ( logger.isDebugEnabled()) {
+				logger.debug(
+						String.format(
+								"View returned for %1$s: %n%2$s",
+								testViewPath,
+								webDriver.getPageSource())
+						);
+			}
+			
+			final String source = "/html/body/h1";
+			WebElement h1WebElement = webDriver.findElement( By.xpath( source));
+			Assert.assertEquals(   
+					SpringIntegrationTestDispatcherServletConfig.getMessageMap().get( Locale.ENGLISH),
+					h1WebElement.getText()
+					);
+		
+		String testViewPathWithParams 
+		= testViewPath.concat( "?").concat( LocaleChangeInterceptor.DEFAULT_PARAM_NAME)
+			.concat( "=").concat( Locale.JAPANESE.toString());
+			// By setting locale in request parameter, Spring's LocaleChangeInterceptor gives  
+			// locale to CookieLocaleResolver what then sets locale to request attribute and cookie.
+		webDriver.get( testViewPathWithParams);
+			if ( logger.isDebugEnabled()) {
+				logger.debug(
+						String.format(
+								"View returned for %1$s, cookies %2$s: %n%3$s",
+								testViewPathWithParams,
+								webDriver.manage().getCookies().toString(), 
+								webDriver.getPageSource())
+						);
+			}
+			
+			h1WebElement = webDriver.findElement( By.xpath( source));
+			Assert.assertEquals(   
+					SpringIntegrationTestDispatcherServletConfig.getMessageMap().get( Locale.JAPANESE),
+					h1WebElement.getText()
+					);
+
+		testViewPathWithParams 
+		= testViewPath.concat( "?").concat( LocaleChangeInterceptor.DEFAULT_PARAM_NAME)
+			.concat( "=").concat( Locale.JAPAN.toString());
+			// By setting locale in request parameter, Spring's LocaleChangeInterceptor gives  
+			// locale to CookieLocaleResolver what then sets locale to request attribute and cookie.
+		webDriver.get( testViewPathWithParams);
+			if ( logger.isDebugEnabled()) {
+				logger.debug(
+						String.format(
+								"View returned for %1$s, cookies %2$s: %n%3$s",
+								testViewPathWithParams,
+								webDriver.manage().getCookies().toString(), 
+								webDriver.getPageSource())
+						);
+			}
+			
+			h1WebElement = webDriver.findElement( By.xpath( source));
+			Assert.assertEquals(   
+					SpringIntegrationTestDispatcherServletConfig.getMessageMap().get( Locale.JAPAN),
+					h1WebElement.getText()
+					);
+			
 	}
 }

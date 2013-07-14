@@ -100,6 +100,11 @@
 	    <maven_compiler_target>${java.specification.version}</maven_compiler_target>
 		
 		<license.resource.directory>src${file.separator}main${file.separator}resources${file.separator}license</license.resource.directory>
+	 	<site.source.diectory>src${file.separator}site</site.source.diectory>
+		
+		<!-- For maven-gpg-plugin -->
+			<gpg_setting_id>gpg_setting_id</gpg_setting_id>
+			<ant-util_version>1.0.1</ant-util_version>
 		
 		<!-- Sets the project's default encoding.
 			http://docs.codehaus.org/display/MAVENUSER/POM+Element+for+Source+File+Encoding 
@@ -260,6 +265,11 @@
 		  				<exclude>pom.xml.versionsBackup</exclude>
 		  				<exclude>**${file.separator}logback-test.xml</exclude>
 		  				<exclude>${license.resource.directory}${file.separator}**${file.separator}</exclude>
+		  				<exclude>${site.source.diectory}${file.separator}**${file.separator}</exclude>
+		  					<!-- Skip adding ASF2 license to site base files because adding downloaded 
+		  						ASF2 license causes SiteToolException with maven-site-plugin due to 
+		  						downloaded ASF2 license contains bom (byte order mark code for UTF-8: 
+		  						U+EFBBBF) at top. -->
 		  			</excludes>
 	  				<header>${license.resource.directory}${file.separator}header.txt</header>
 						<properties>
@@ -601,6 +611,39 @@
                         </plugin>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-antrun-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>set_gpg_prop_execution</id>
+									<phase>post-integration-test</phase>
+									<goals><goal>run</goal></goals>
+									<configuration>
+										<exportAntProperties>true</exportAntProperties>
+										<target name="set_gpg_prop_target">
+											<description>
+												To automatically feed gpg passpharse from Maven  
+												settings file to maven-gpg-plugin's batch mode (without 
+												user interaction via prompting to enter it).
+											</description>
+											<taskdef resource="com/newmainsoftech/ant/antlib.xml" 
+												classpathref="maven.plugin.classpath" />
+											<mvnservercreden 
+												serverid="${gpg_setting_id}" 
+												passwordpropname="gpg.passphrase" anttoo="true" />
+										</target>
+									</configuration>
+								</execution>
+							</executions>
+							<dependencies>
+								<dependency>
+									<groupId>com.newmainsoftech</groupId>
+									<artifactId>ant-util</artifactId>
+									<version>${ant-util_version}</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-gpg-plugin</artifactId>
 							<version>1.4</version>
 							<executions>
@@ -616,6 +659,10 @@
 					</plugins>
 				</pluginManagement>
 				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
