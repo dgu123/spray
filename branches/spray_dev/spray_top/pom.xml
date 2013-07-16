@@ -56,7 +56,7 @@
 		</repository>
 	</repositories>  	
 	<scm>
-		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/</connection>
+		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/spray_top</connection>
 		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/</developerConnection>
 		<url>https://code.google.com/p/spray/source/checkout</url>
 	</scm>
@@ -74,7 +74,7 @@
 		<site><!-- location where site is deployed -->
 			<id>google.code.svn.repo</id>
 			<name>Google Code Subversion Repository</name>
-			<url>svn:https://spray.googlecode.com/svn/site</url>
+			<url>svn:https://spray.googlecode.com/svn/site/spray</url>
 		</site>
 	</distributionManagement>
 	
