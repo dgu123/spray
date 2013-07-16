@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<name>tiles_license_pom</name>
+	<description>tiles poms for licensing</description>
+	<groupId>com.newmainsoftech.tiles_pom</groupId>
+	<artifactId>tiles_license_pom</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	
+	<properties>
+		<license.resource.directory>src${file.separator}main${file.separator}resources${file.separator}license</license.resource.directory>
+	 	<site.source.diectory>src${file.separator}site</site.source.diectory>
+	 	
+	 	<!-- For tiles-maven-plugin -->
+	 	<tile.1>com.newmainsoftech.tiles_pom:tiles_antrun_pom:1.0.0-SNAPSHOT</tile.1>
+	</properties>
+
+	<licenses>
+		<license>
+			<name>Apache License version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+	<build>
+	  	<resources>
+	  		<resource>
+	  			<directory>src${file.separator}main${file.separator}resources</directory>
+	  			<excludes>
+	  				<exclude>license</exclude>
+	  				<exclude>license/**</exclude>
+	  			</excludes>
+	  		</resource>
+	  	</resources>
+  	
+	    <pluginManagement>
+	        <plugins>
+		  		<plugin>
+		  			<groupId>org.codehaus.mojo</groupId>
+		  			<artifactId>license-maven-plugin</artifactId>
+		  			<version>1.3</version>
+					<executions>
+						<execution>
+							<id>download-apache-license</id>
+							<phase>generate-resources</phase>
+							<goals><goal>update-project-license</goal></goals>
+							<configuration>
+								<licenseName>apache_v2</licenseName>
+									<!-- Download Apache license as LICENSE.txt -->
+								<generateBundle>true</generateBundle>
+									<!-- copy LICENSE.txt file to ${project.build.outputDirectory}/
+										META-INF/${project.artifactId}-LICENSE.txt -->
+							</configuration>
+						</execution>
+					</executions>
+		  		</plugin>
+		  		<plugin>
+		  			<groupId>com.google.code.maven-license-plugin</groupId>
+		  			<artifactId>maven-license-plugin</artifactId>
+		  			<version>1.4.0</version>
+		  			<configuration>
+		  				<strictCheck>true</strictCheck>
+			  			<excludes>
+			  				<exclude>**${file.separator}*LICENSE.txt</exclude>
+			  				<exclude>**${file.separator}*.log</exclude>
+			  				<exclude>**${file.separator}svnIgnore.txt</exclude>
+			  				<exclude>pom.xml.versionsBackup</exclude>
+			  				<exclude>**${file.separator}logback-test.xml</exclude>
+			  				<exclude>${license.resource.directory}${file.separator}**${file.separator}</exclude>
+			  				<exclude>${site.source.diectory}${file.separator}**${file.separator}</exclude>
+			  					<!-- Skip adding ASF2 license to site base files because adding downloaded 
+			  						ASF2 license causes SiteToolException with maven-site-plugin due to 
+			  						downloaded ASF2 license contains bom (byte order mark code for UTF-8: 
+			  						U+EFBBBF) at top. -->
+			  			</excludes>
+		  				<header>${license.resource.directory}${file.separator}header.txt</header>
+							<properties>
+								<project.license.years>${project.license.years}</project.license.years>
+								<project.organization.name>${project.organization.name}</project.organization.name>
+							</properties>
+		  				<headerDefinitions>
+		  					<headerDefinition>${license.resource.directory}${file.separator}javaHeaderStyleDefinition.xml</headerDefinition>
+		  				</headerDefinitions>
+		  				<mapping>
+		  					<java>FOR_JAVA_SOURCE</java>
+		  				</mapping>
+		  			</configuration>
+		  			<executions>
+		  				<execution>
+		  					<id>append-code-license</id>
+		  					<phase>prepare-package</phase>
+		  					<goals><goal>format</goal></goals>
+		  				</execution>
+		  			</executions>
+		  		</plugin>
+	        </plugins>
+	    </pluginManagement>
+	    <plugins>
+	  		<plugin>
+	  			<groupId>org.apache.maven.plugins</groupId>
+	  			<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>set_license_years_property</id>
+						<phase>initialize</phase>
+						<goals><goal>run</goal></goals>
+						<inherited>true</inherited>
+						<configuration>
+							<target name="set_license_years_property_target">
+								<description>
+									<![CDATA[ 
+									Define project.license.years Maven property with dynamic values 
+									]]>
+								</description>
+								<taskdef resource="net/sf/antcontrib/antlib.xml" 
+									classpathref="maven.plugin.classpath"/>
+								<script language="beanshell">
+								     <![CDATA[
+								    import org.apache.maven.project.MavenProject;
+									import java.util.Calendar;
+									import java.lang.String;
+									import java.util.Properties;
+								    
+									self.log( 
+											String.format(
+												"START %1$s TASK of %2$s TARGET >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",
+												new Object[]{ self.getTaskName(), self.getOwningTarget().getName()}
+												)
+											);
+									
+								    MavenProject mavenProject 
+									= (MavenProject)(self.getProject().getReference( "maven.project"));
+									Properties mavenProperties = mavenProject.getProperties();
+									
+								    // Define project.license.years Maven property to interprete 
+								    // referece in header.txt for maven-license-plugin. ------------
+									String propertyKey = "project.license.years";
+									if ( mavenProperties.getProperty( propertyKey) == null) {
+										String propertyValue = mavenProject.getInceptionYear();
+											Calendar calendar = Calendar.getInstance();
+											String thisYear 
+											= String.valueOf( calendar.get( Calendar.YEAR));
+											if ( mavenProject.getInceptionYear() == null) {
+												propertyValue = thisYear;
+											}
+											else {
+												if ( !thisYear.equals( propertyValue)) {
+													propertyValue = propertyValue + "-" + thisYear;
+												}
+											}
+										
+										mavenProperties.setProperty( propertyKey, propertyValue);
+											self.log(
+												String.format(
+													"Set %2$s value to %1$s Maven property.",
+													new Object[]{ 
+														propertyKey, 
+														((propertyValue.length() < 1) ? "empty string (\"\")" : ("\"" + propertyValue + "\"")) }
+													) 
+												);
+									}
+								    // -------------------------------------------------------------
+									
+									self.log( 
+											String.format(
+												"END %1$s TASK of %2$s TARGET <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+												new Object[]{ self.getTaskName(), self.getOwningTarget().getName()}
+												)
+											);
+								     ]]>
+								</script>
+							</target>
+						</configuration>						
+					</execution>
+				</executions>
+	        </plugin>
+	  		<plugin>
+	  			<groupId>org.codehaus.mojo</groupId>
+	  			<artifactId>license-maven-plugin</artifactId>
+	        </plugin>
+	  		<plugin>
+	  			<groupId>com.google.code.maven-license-plugin</groupId>
+	  			<artifactId>maven-license-plugin</artifactId>
+  			</plugin>	        
+	    </plugins>
+	</build>
+</project>

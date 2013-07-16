@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<name>tiles_site_svn_pom</name>
+	<description>tiles poms for site on svn server</description>
+	<groupId>com.newmainsoftech.tiles_pom</groupId>
+	<artifactId>tiles_site_svn_pom</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	
+	<properties>
+	    <maven-site-plugin_version>3.2</maven-site-plugin_version>
+	    <maven-svn-wagon_version>1.4</maven-svn-wagon_version>
+	</properties>
+	
+	<build>
+	    <pluginManagement>
+	        <plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${maven-site-plugin_version}</version>
+					<dependencies>
+					    <dependency>
+					    	<groupId>com.google.code.maven-svn-wagon</groupId>
+					    	<artifactId>maven-svn-wagon</artifactId>
+					    	<version>${maven-svn-wagon_version}</version>
+					    </dependency>
+					</dependencies>
+				</plugin>
+	        </plugins>
+	    </pluginManagement>
+	    <plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+        	</plugin>	        
+	    </plugins>
+	</build>
+</project>
