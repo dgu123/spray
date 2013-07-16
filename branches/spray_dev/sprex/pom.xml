@@ -27,6 +27,14 @@
 		<url>https://code.google.com/p/spray/source/checkout</url>
 	</scm>
 	
+	<distributionManagement>
+		<site><!-- location where site is deployed -->
+			<id>google.code.svn.repo</id>
+			<name>Google Code Subversion Repository</name>
+			<url>svn:https://spray.googlecode.com/svn/site/sprex</url>
+		</site>
+	</distributionManagement>
+	
 	<properties>
 		<!-- tomcat7_maven_plugin_version>2.1</tomcat7_maven_plugin_version -->
 		<skipSurefire>false</skipSurefire>
