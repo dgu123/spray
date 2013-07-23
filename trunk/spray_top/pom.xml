@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<prerequisites>
 		<maven>3.0</maven>
@@ -14,7 +16,7 @@
 	</organization>
 	
 	<name>Spray</name>
-	<description>Spray is multi-module project consisted of Spring utilities</description>
+	<description>Spray project is consisted of Spring utilities.</description>
 	<groupId>com.newmainsoftech</groupId>
 	<artifactId>spray</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
@@ -42,19 +44,19 @@
 
 	<repositories>
 		<repository>
-		<id>sonatype-nexus-snapshots</id>
-		<name>Sonatype Nexus Snapshots</name>
-		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		<releases>
-			<enabled>false</enabled>
-		</releases>
-		<snapshots>
-			<enabled>true</enabled>
-		</snapshots>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>  	
 	<scm>
-		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/</connection>
+		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/spray_top</connection>
 		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/</developerConnection>
 		<url>https://code.google.com/p/spray/source/checkout</url>
 	</scm>
@@ -194,12 +196,6 @@
 			</dependency>
 	</dependencies>
 	
-  <modules>
-    <module>slingong</module>
-    <module>slingong_test</module>
-    <module>sprex</module>
-  </modules>
-  
   <build>
   	<resources>
   		<resource>
@@ -299,9 +295,11 @@
 	  				<execution>
 	  					<goals>
 	  						<goal>jar</goal>
+	  						<goal>fix</goal>
 	  					</goals>
 						<configuration>
 							<notimestamp>true</notimestamp>
+							<force>true</force>
 						</configuration>
 	  				</execution>
 	  			</executions>

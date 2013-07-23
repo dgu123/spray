@@ -23,6 +23,14 @@
 		<url>https://code.google.com/p/spray/source/checkout</url>
 	</scm>
 	
+	<distributionManagement>
+		<site><!-- location where site is deployed -->
+			<id>google.code.svn.repo</id>
+			<name>Google Code Subversion Repository</name>
+			<url>svn:https://spray.googlecode.com/svn/site/slingong</url>
+		</site>
+	</distributionManagement>
+	
     <repositories>
     	<repository>
     		<name>Seasar Foundation repo</name>
