@@ -23,10 +23,9 @@
       <item name="Spray" href="./" />
     </links>
 	<menu name="Modules">
-		<item name="SlingOnG" href="../slingong/index.html" />
-		<item name="Sprex" href="../sprex/index.html" />
+		<item name="SlingOnG" href="slingong/index.html" />
+		<item name="Sprex" href="sprex/index.html" />
 	</menu>
-    <menu ref="parent" />
     <menu ref="reports" />
   </body>
 </project>

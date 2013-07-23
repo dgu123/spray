@@ -74,7 +74,7 @@
 		<site><!-- location where site is deployed -->
 			<id>google.code.svn.repo</id>
 			<name>Google Code Subversion Repository</name>
-			<url>svn:https://spray.googlecode.com/svn/site/spray</url>
+			<url>svn:https://spray.googlecode.com/svn/site</url>
 		</site>
 	</distributionManagement>
 	
@@ -295,9 +295,11 @@
 	  				<execution>
 	  					<goals>
 	  						<goal>jar</goal>
+	  						<goal>fix</goal>
 	  					</goals>
 						<configuration>
 							<notimestamp>true</notimestamp>
+							<force>true</force>
 						</configuration>
 	  				</execution>
 	  			</executions>
