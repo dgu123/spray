@@ -16,7 +16,7 @@
     governing permissions and limitations under the License.
 
 -->
-<configuration>
+<configuration debug="true">
   <appender name="STDOUT"
     class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
