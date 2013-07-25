@@ -249,8 +249,15 @@
 		  				<exclude>**${file.separator}*.log</exclude>
 		  				<exclude>**${file.separator}svnIgnore.txt</exclude>
 		  				<exclude>pom.xml.versionsBackup</exclude>
+		  				<exclude>**${file.separator}logback.xml</exclude>
 		  				<exclude>**${file.separator}logback-test.xml</exclude>
+		  				<exclude>**${file.separator}log4J.properties</exclude>
 		  				<exclude>${license.resource.directory}${file.separator}**${file.separator}</exclude>
+		  				<exclude>${site.source.diectory}${file.separator}**${file.separator}</exclude>
+		  					<!-- Skip adding ASF2 license to site base files because adding downloaded 
+		  						ASF2 license causes SiteToolException with maven-site-plugin due to 
+		  						downloaded ASF2 license contains bom (byte order mark code for UTF-8: 
+		  						U+EFBBBF) at top. -->
 		  				<exclude>${test_src_by_apt}${file.separator}**${file.separator}</exclude>
 		  			</excludes>
 	  			</configuration>
