@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+			<outputPatternAsHeader>true</outputPatternAsHeader>
+		</encoder>
+	</appender>
+	
+	<logger name="com.newmainsoftech.spray.sprex" level="DEBUG" />
+	<logger name="org.springframework.test" level="DEBUG" />
+	<logger name="org.springframework.context.support" level="DEBUG" />
+	<logger name="org.springframework.web.servlet.config" level="DEBUG" />
+	
+	<!-- Default level of root is DEBUG -->
+	<root level="${logback-root-level:-INFO}">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
