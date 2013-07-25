@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<prerequisites>
 		<maven>3.0</maven>
@@ -19,7 +17,7 @@
 	<description>Spray project is consisted of Spring utilities.</description>
 	<groupId>com.newmainsoftech</groupId>
 	<artifactId>spray</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.1.0</version>
 	<packaging>pom</packaging>
 	<inceptionYear>2011</inceptionYear>
 	<url>https://code.google.com/p/spray</url>
@@ -56,9 +54,9 @@
 		</repository>
 	</repositories>  	
 	<scm>
-		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/spray_top</connection>
-		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/</developerConnection>
-		<url>https://code.google.com/p/spray/source/checkout</url>
+		<connection>scm:svn:http://spray.googlecode.com/svn/tags/spray-1.1.0</connection>
+		<developerConnection>scm:svn:https://spray.googlecode.com/svn/tags/spray-1.1.0</developerConnection>
+		<url>https://code.google.com/p/spray/source/checkout/tags/spray-1.1.0</url>
 	</scm>
 	<distributionManagement>
 		<snapshotRepository>
@@ -416,7 +414,7 @@
 								<description>
 								     <![CDATA[ Define various Maven properties with dynamic values ]]>
 								</description>
-								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath"/>
+								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath" />
 								<script language="beanshell">
 								     <![CDATA[
 								    import org.apache.maven.project.MavenProject;
@@ -458,8 +456,7 @@
 													"Set %2$s value to %1$s Maven property.",
 													new Object[]{ 
 														propertyKey, 
-														((propertyValue.length() < 1) ? "empty string (\"\")" : ("\"" + propertyValue + "\"")) }
-													) 
+														((propertyValue.length() < 1) ? "empty string (\"\")" : ("\"" + propertyValue + "\"")) } ) 
 												);
 									}
 								    // -------------------------------------------------------------
@@ -487,18 +484,18 @@
 									-->console for convenience of development and debugging in <!-- 
 									-->process-test-classes phase (before test phase).
 	  							</description>
-								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath"/>
+								<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath" />
 								<if>
-									<equals arg1="${open-bsh}" arg2="true"/>
+									<equals arg1="${open-bsh}" arg2="true" />
 									<then>
-			  							<property name="plugin_classpath" refid="maven.plugin.classpath"/>
-			  							<property name="test_classpath" refid="maven.test.classpath"/>
+			  							<property name="plugin_classpath" refid="maven.plugin.classpath" />
+			  							<property name="test_classpath" refid="maven.test.classpath" />
 			  							<java classname="bsh.Console" dir="${project.build.directory}" fork="true" spawn="true">
 			  								<classpath>
-			  									<pathelement path="${java.class.path}"/>
+			  									<pathelement path="${java.class.path}" />
 			  									<!-- pathelement location="${org.beanshell:bsh:jar}" / -->
-			  									<pathelement path="${plugin_classpath}"/>
-			  									<pathelement path="${test_classpath}"/>
+			  									<pathelement path="${plugin_classpath}" />
+			  									<pathelement path="${test_classpath}" />
 			  								</classpath>
 			  							</java>
 									</then>
@@ -625,11 +622,8 @@
 												settings file to maven-gpg-plugin's batch mode (without 
 												user interaction via prompting to enter it).
 											</description>
-											<taskdef resource="com/newmainsoftech/ant/antlib.xml" 
-												classpathref="maven.plugin.classpath" />
-											<mvnservercreden 
-												serverid="${gpg_setting_id}" 
-												passwordpropname="gpg.passphrase" anttoo="true" />
+											<taskdef resource="com/newmainsoftech/ant/antlib.xml" classpathref="maven.plugin.classpath" />
+											<mvnservercreden serverid="${gpg_setting_id}" passwordpropname="gpg.passphrase" anttoo="true" />
 										</target>
 									</configuration>
 								</execution>
