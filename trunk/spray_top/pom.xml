@@ -55,7 +55,7 @@
 	</repositories>  	
 	<scm>
 		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/spray_top</connection>
-		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/</developerConnection>
+		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/spray_top</developerConnection>
 		<url>https://code.google.com/p/spray/source/checkout</url>
 	</scm>
 	<distributionManagement>
@@ -256,7 +256,8 @@
 		  				<exclude>**${file.separator}*LICENSE.txt</exclude>
 		  				<exclude>**${file.separator}*.log</exclude>
 		  				<exclude>**${file.separator}svnIgnore.txt</exclude>
-		  				<exclude>pom.xml.versionsBackup</exclude>
+		  				<exclude>pom.xml.*</exclude>
+		  				<exclude>release.properties</exclude>
 		  				<exclude>**${file.separator}logback.xml</exclude>
 		  				<exclude>**${file.separator}logback-test.xml</exclude>
 		  				<exclude>**${file.separator}log4J.properties</exclude>
