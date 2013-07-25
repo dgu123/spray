@@ -17,7 +17,7 @@
 	<description>Spray project is consisted of Spring utilities.</description>
 	<groupId>com.newmainsoftech</groupId>
 	<artifactId>spray</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<inceptionYear>2011</inceptionYear>
 	<url>https://code.google.com/p/spray</url>
@@ -54,9 +54,9 @@
 		</repository>
 	</repositories>  	
 	<scm>
-		<connection>scm:svn:http://spray.googlecode.com/svn/tags/spray-1.1.0</connection>
-		<developerConnection>scm:svn:https://spray.googlecode.com/svn/tags/spray-1.1.0</developerConnection>
-		<url>https://code.google.com/p/spray/source/checkout/tags/spray-1.1.0</url>
+		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/spray_top</connection>
+		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/</developerConnection>
+		<url>https://code.google.com/p/spray/source/checkout</url>
 	</scm>
 	<distributionManagement>
 		<snapshotRepository>
@@ -456,8 +456,7 @@
 													"Set %2$s value to %1$s Maven property.",
 													new Object[]{ 
 														propertyKey, 
-														((propertyValue.length() < 1) ? "empty string (\"\")" : ("\"" + propertyValue + "\"")) } ) 
-												);
+														((propertyValue.length() < 1) ? "empty string (\"\")" : ("\"" + propertyValue + "\"")) } ) );
 									}
 								    // -------------------------------------------------------------
 									
