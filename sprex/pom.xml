@@ -14,14 +14,14 @@
 	<description>Library of Spring extensions and configurations</description>
 	<groupId>com.newmainsoftech.spray</groupId>
 	<artifactId>sprex</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<url>https://code.google.com/p/spray/source/browse/#svn%2Ftrunk%2Fsprex%253Fstate%253Dclosed</url>
 	<packaging>jar</packaging>
 	
 	<scm>
-		<connection>scm:svn:http://spray.googlecode.com/svn/tags/sprex-1.0.0</connection>
-		<developerConnection>scm:svn:https://spray.googlecode.com/svn/tags/sprex-1.0.0</developerConnection>
-		<url>https://code.google.com/p/spray/source/checkout/tags/sprex-1.0.0</url>
+		<connection>scm:svn:http://spray.googlecode.com/svn/trunk/sprex</connection>
+		<developerConnection>scm:svn:https://spray.googlecode.com/svn/trunk/sprex</developerConnection>
+		<url>https://code.google.com/p/spray/source/checkout</url>
 	</scm>
 	
 	<distributionManagement>
